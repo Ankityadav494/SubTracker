@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #141210;
+  --color-surface-elevated: #1c1917;
+  --color-accent: #f97316;
+  --color-accent-soft: #fb923c;
+  --color-highlight: #f43f5e;
+}
+
+@layer base {
+  body {
+    @apply m-0 min-h-svh bg-[#0c0a09] text-stone-100 antialiased;
+  }
+
+  #root {
+    @apply min-h-svh;
+  }
+}
