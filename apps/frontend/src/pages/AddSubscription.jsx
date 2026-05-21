@@ -7,7 +7,8 @@ import SubscriptionForm from "../components/SubscriptionForm";
 import TemplatePicker from "../components/TemplatePicker";
 import { addSubscription } from "../services/subscriptionService";
 import { useAuth } from "../hooks/useAuth";
-import { cardClass, headingClass, pageClass } from "../utils/styles";
+import { cardClass, headingClass } from "../utils/styles";
+import { defaultBillingDate } from "../utils/templates";
 
 const AddSubscription = () => {
   const [params] = useSearchParams();
@@ -25,6 +26,18 @@ const AddSubscription = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const applyPlatform = (t) => {
+    setForm({
+      ...form,
+      name: t.name,
+      price: t.price > 0 ? String(t.price) : form.price,
+      category: t.category || form.category,
+      billingCycle: t.billingCycle || form.billingCycle,
+      nextBillingDate: form.nextBillingDate || defaultBillingDate(),
+    });
+    toast.success(`${t.name} details filled in`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,32 +62,42 @@ const AddSubscription = () => {
   return (
     <Layout>
       <Navbar />
-      <main className={pageClass}>
-        <h1 className={`mb-6 text-left ${headingClass}`}>Add subscription</h1>
-        <div className={`max-w-lg ${cardClass}`}>
-          <TemplatePicker
-            onSelect={(t) => {
-              const date = new Date();
-              date.setDate(date.getDate() + 30);
-              setForm({
-                ...form,
-                name: t.name,
-                price: String(t.price),
-                category: t.category,
-                billingCycle: t.billingCycle,
-                nextBillingDate: date.toISOString().split("T")[0],
-              });
-            }}
-          />
-          <SubscriptionForm
-            form={form}
-            setForm={setForm}
-            onSubmit={handleSubmit}
-            loading={loading}
-            error={error}
-            submitLabel="Add subscription"
-            showHousehold={!!user?.household}
-          />
+      <main className="mx-auto w-full max-w-5xl px-4 pb-16 pt-8 lg:px-6">
+        <header className="mb-8 text-center sm:text-left">
+          <h1 className={headingClass}>Add subscription</h1>
+          <p className="mt-2 text-sm text-stone-500">
+            Pick a platform, type its name for suggestions, or fill the form manually
+          </p>
+        </header>
+
+        <div className={`${cardClass} lg:p-8`}>
+          <TemplatePicker onSelect={applyPlatform} />
+
+          <div
+            className="my-8 flex items-center gap-3 lg:my-10"
+            role="separator"
+            aria-label="Manual entry"
+          >
+            <div className="h-px flex-1 bg-stone-800" />
+            <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Or enter manually
+            </span>
+            <div className="h-px flex-1 bg-stone-800" />
+          </div>
+
+          <div className="mx-auto w-full max-w-2xl">
+            <SubscriptionForm
+              form={form}
+              setForm={setForm}
+              onSubmit={handleSubmit}
+              loading={loading}
+              error={error}
+              submitLabel="Add subscription"
+              showHousehold={!!user?.household}
+              platformAutocomplete
+              onPlatformSelect={applyPlatform}
+            />
+          </div>
         </div>
       </main>
     </Layout>

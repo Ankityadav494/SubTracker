@@ -63,8 +63,8 @@ const EditSubscription = () => {
         <h1 className={`mb-6 text-left ${headingClass}`}>Edit subscription</h1>
         <div className={`max-w-lg ${cardClass}`}>
           {form.priceHistory?.length > 1 && (
-            <div className="mb-4 rounded-lg bg-slate-800/60 p-3 text-left text-sm text-slate-400">
-              <p className="font-medium text-slate-300">Price history</p>
+            <div className="mb-4 rounded-lg border border-stone-700 bg-stone-800/50 p-3 text-left text-sm text-stone-400">
+              <p className="font-medium text-orange-300">Price history</p>
               <ul className="mt-2 space-y-1">
                 {[...form.priceHistory].reverse().slice(0, 5).map((h, i) => (
                   <li key={i}>

@@ -1,17 +1,28 @@
 const BRAND_MAP = {
   netflix: { slug: "netflix", color: "E50914" },
   spotify: { slug: "spotify", color: "1DB954" },
-  amazon: { slug: "amazonprime", color: "00A8E1" },
+  
+  // Specific compound brands MUST be declared BEFORE parent brands to prevent greedy matching
   amazonprime: { slug: "amazonprime", color: "00A8E1" },
   prime: { slug: "amazonprime", color: "00A8E1" },
-  youtube: { slug: "youtube", color: "FF0000" },
-  disney: { slug: "disneyplus", color: "113CCF" },
-  disneyplus: { slug: "disneyplus", color: "113CCF" },
-  hotstar: { slug: "hotstar", color: "0F1014" },
-  apple: { slug: "apple", color: "000000" },
+  amazon: { slug: "amazonprime", color: "00A8E1" },
+  
   applemusic: { slug: "applemusic", color: "FA243C" },
+  apple: { slug: "apple", color: "000000" },
+  
+  googleplay: { slug: "googleplay", color: "00C0FF" },
+  googleplaystore: { slug: "googleplay", color: "00C0FF" },
+  playstore: { slug: "googleplay", color: "00C0FF" },
+  google: { slug: "google", color: "4285F4" },
+  
+  youtube: { slug: "youtube", color: "FF0000" },
+  disneyplus: { slug: "disneyplus", color: "113CCF" },
+  disney: { slug: "disneyplus", color: "113CCF" },
+  hotstar: { slug: "hotstar", color: "0F1014" },
+  
   microsoft: { slug: "microsoft", color: "F25022" },
   office: { slug: "microsoft", color: "F25022" },
+  
   playstation: { slug: "playstation", color: "003791" },
   xbox: { slug: "xbox", color: "107C10" },
   steam: { slug: "steam", color: "000000" },
@@ -34,6 +45,8 @@ const BRAND_MAP = {
   perplexity: { slug: "perplexity", color: "1FB8CD" },
   openai: { slug: "openai", color: "412991" },
   chatgpt: { slug: "openai", color: "412991" },
+  gaana: { slug: "gaana", color: "E72C30" },
+  ganna: { slug: "gaana", color: "E72C30" },
 };
 
 const CATEGORY_FALLBACK = {
@@ -68,3 +81,55 @@ export const getBrand = (name, category = "Others") => {
 
 export const brandLogoUrl = (slug, color = "ffffff") =>
   slug ? `https://cdn.simpleicons.org/${slug}/${color}` : null;
+
+export const guessDomain = (name) => {
+  if (!name) return null;
+  const cleaned = name.toLowerCase().trim();
+  
+  const customMap = {
+    // Specific multi-word keywords first to prevent generic steals
+    "amazon prime": "primevideo.com",
+    "apple music": "music.apple.com",
+    "google play": "play.google.com",
+    "play store": "play.google.com",
+    "youtube premium": "youtube.com",
+    
+    // Core brands
+    netflix: "netflix.com",
+    spotify: "spotify.com",
+    prime: "primevideo.com",
+    amazon: "amazon.com",
+    youtube: "youtube.com",
+    disney: "disneyplus.com",
+    hotstar: "hotstar.com",
+    playstation: "playstation.com",
+    xbox: "xbox.com",
+    adobe: "adobe.com",
+    notion: "notion.so",
+    chatgpt: "openai.com",
+    openai: "openai.com",
+    github: "github.com",
+    linkedin: "linkedin.com",
+    canva: "canva.com",
+    zoom: "zoom.us",
+    gaana: "gaana.com",
+    ganna: "gaana.com",
+    office: "microsoft.com",
+    
+    // Generic base brands last
+    apple: "apple.com",
+    google: "google.com",
+    microsoft: "microsoft.com",
+  };
+
+  for (const [key, domain] of Object.entries(customMap)) {
+    if (cleaned.includes(key)) return domain;
+  }
+
+  const base = cleaned
+    .replace(/(premium|plus|pro|subscription|india|music|tv|video|play)/g, "")
+    .trim()
+    .replace(/[^a-z0-9]/g, "");
+
+  return base ? `${base}.com` : null;
+};

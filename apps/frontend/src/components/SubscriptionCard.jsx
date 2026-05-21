@@ -4,7 +4,7 @@ import { formatDate } from "../utils/dateUtils";
 import { formatCurrency, monthlyEquivalent } from "../utils/subscriptionHelpers";
 
 const categoryColors = {
-  OTT: "bg-orange-500/20 text-orange-300 ring-orange-500/30",
+  OTT: "bg-pink-500/20 text-pink-300 ring-pink-500/30",
   Music: "bg-emerald-500/20 text-emerald-300 ring-emerald-500/30",
   Gaming: "bg-fuchsia-500/20 text-fuchsia-300 ring-fuchsia-500/30",
   Software: "bg-rose-500/20 text-rose-300 ring-rose-500/30",
@@ -27,7 +27,10 @@ const SubscriptionCard = ({ sub, onDelete }) => {
       : 0;
 
   return (
-    <div className="group flex w-full flex-col overflow-hidden rounded-2xl border border-stone-800/80 bg-gradient-to-br from-stone-900/90 to-stone-950 shadow-lg transition hover:-translate-y-0.5 hover:border-orange-500/40 hover:shadow-orange-900/20">
+    <div
+      id={sub._id}
+      className="group flex w-full flex-col overflow-hidden rounded-2xl border border-stone-800/80 bg-gradient-to-br from-stone-900/90 to-stone-950 shadow-lg transition hover:-translate-y-0.5 hover:border-orange-500/40 hover:shadow-orange-900/20"
+    >
       <div className="flex items-start gap-4 p-5">
         <BrandLogo name={sub.name} category={sub.category} size="lg" />
         <div className="min-w-0 flex-1">
@@ -47,17 +50,12 @@ const SubscriptionCard = ({ sub, onDelete }) => {
 
           <p className="mt-2 text-2xl font-bold text-transparent bg-gradient-to-r from-orange-300 to-rose-300 bg-clip-text">
             {formatCurrency(sub.price)}
-            <span className="text-sm font-normal text-stone-500">
-              {" "}
-              / {sub.billingCycle}
-            </span>
+            <span className="text-sm font-normal text-stone-500"> / {sub.billingCycle}</span>
           </p>
           <p className="text-sm text-stone-400">≈ {formatCurrency(monthly)}/month</p>
 
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <span className={statusColors[sub.status] || statusColors.active}>
-              {sub.status}
-            </span>
+            <span className={statusColors[sub.status] || statusColors.active}>{sub.status}</span>
             {priceChange !== 0 && (
               <span className={priceChange > 0 ? "text-rose-400" : "text-emerald-400"}>
                 {priceChange > 0 ? "↑" : "↓"} {formatCurrency(Math.abs(priceChange))}
@@ -66,10 +64,7 @@ const SubscriptionCard = ({ sub, onDelete }) => {
           </div>
 
           <p className="mt-2 text-sm text-stone-500">
-            Renews{" "}
-            <span className="font-medium text-stone-300">
-              {formatDate(sub.nextBillingDate)}
-            </span>
+            Renews <span className="font-medium text-stone-300">{formatDate(sub.nextBillingDate)}</span>
           </p>
         </div>
       </div>

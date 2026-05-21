@@ -31,7 +31,7 @@ const OAuthButtons = () => {
       window.google.accounts.id.renderButton(googleRef.current, {
         theme: "outline",
         size: "large",
-        width: "100%",
+        width: googleRef.current.offsetWidth || 400,
       });
     }
   }, [navigate, setUser]);
@@ -45,14 +45,18 @@ const OAuthButtons = () => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirect)}&scope=user:email`;
   };
 
+  if (!GOOGLE_CLIENT_ID && !GITHUB_CLIENT_ID) return null;
+
   return (
-    <div className="space-y-3">
-      {GOOGLE_CLIENT_ID && <div ref={googleRef} className="flex justify-center" />}
+    <div className="flex w-full flex-col gap-2">
+      {GOOGLE_CLIENT_ID && (
+        <div ref={googleRef} className="flex w-full justify-center [&>div]:w-full [&_iframe]:!w-full" />
+      )}
       {GITHUB_CLIENT_ID && (
         <button
           type="button"
           onClick={handleGithub}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-stone-600 bg-stone-800 px-4 py-2.5 text-sm font-medium text-white hover:border-stone-500 hover:bg-stone-700"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-stone-600 bg-stone-800/60 px-4 py-2.5 text-sm font-medium text-stone-200 hover:border-orange-500/50 hover:bg-stone-800"
         >
           Continue with GitHub
         </button>

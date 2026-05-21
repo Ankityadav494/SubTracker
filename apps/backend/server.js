@@ -9,6 +9,8 @@ const analyticsRoutes = require("./routes/analytics");
 const remindersRoutes = require("./routes/reminders");
 const usersRoutes = require("./routes/users");
 const householdRoutes = require("./routes/household");
+
+const chatRoutes = require("./routes/chat");
 const { startReminderCron } = require("./jobs/reminderJob");
 
 const app = express();
@@ -31,6 +33,7 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/reminders", remindersRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/api/household", householdRoutes);
 
 app.use((err, _req, res, _next) => {

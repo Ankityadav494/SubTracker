@@ -1,7 +1,18 @@
 import API from "./api";
 
-export const signup = async (data) => {
-  const res = await API.post("/auth/signup", data);
+export const sendSignupOtp = async (data) => {
+  const res = await API.post("/auth/signup/send-otp", data);
+  return res.data;
+};
+
+export const resendSignupOtp = async (email) => {
+  const res = await API.post("/auth/signup/resend-otp", { email });
+  return res.data;
+};
+
+export const verifySignupOtp = async (data) => {
+  const res = await API.post("/auth/signup/verify-otp", data);
+  localStorage.setItem("token", res.data.token);
   return res.data;
 };
 

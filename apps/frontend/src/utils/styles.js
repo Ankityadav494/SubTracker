@@ -1,8 +1,8 @@
 export const inputClass =
-  "w-full rounded-xl border border-stone-700 bg-stone-900/80 px-4 py-2.5 text-stone-100 placeholder-stone-500 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25";
+  "w-full rounded-xl border border-stone-700 bg-stone-800/80 px-4 py-2.5 text-stone-100 placeholder-stone-500 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25";
 
 export const selectClass =
-  "w-full rounded-xl border border-stone-700 bg-stone-900/80 px-4 py-2.5 text-stone-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25";
+  "w-full rounded-xl border border-stone-700 bg-stone-800/80 px-4 py-2.5 text-stone-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25";
 
 export const btnPrimaryClass =
   "w-full rounded-xl bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-2.5 font-semibold text-white shadow-lg shadow-orange-900/40 transition hover:from-orange-400 hover:to-rose-400 disabled:cursor-not-allowed disabled:opacity-50";
@@ -18,6 +18,9 @@ export const statCardClass =
 
 export const pageClass = "mx-auto max-w-6xl px-4 pb-12";
 
+/** Centered narrow column for forms (add / edit) */
+export const formPageClass = "mx-auto w-full max-w-2xl px-4 pb-16 pt-8";
+
 export const headingClass =
   "bg-gradient-to-r from-orange-200 via-amber-100 to-rose-200 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl";
 
@@ -31,5 +34,3 @@ export const errorClass =
 
 export const linkClass =
   "font-medium text-orange-400 transition hover:text-amber-300";
-
-export const accentTextClass = "font-bold text-transparent bg-gradient-to-r from-orange-400 to-rose-400 bg-clip-text";

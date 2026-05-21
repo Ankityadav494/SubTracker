@@ -17,9 +17,7 @@ const SpendingTrendChart = ({ trends }) => {
     return (
       <div className={statCardClass}>
         <h3 className={`mb-2 text-left ${subheadingClass}`}>Spending trend</h3>
-        <p className="text-sm text-stone-500">
-          Trend data appears as you add subscriptions over time.
-        </p>
+        <p className="text-sm text-stone-500">Add subscriptions to see trends over time.</p>
       </div>
     );
   }

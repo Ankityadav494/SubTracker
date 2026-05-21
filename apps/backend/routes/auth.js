@@ -3,8 +3,11 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User");
+const PendingSignup = require("../models/PendingSignup");
 const { protect } = require("../middleware/auth");
 const { sendPasswordResetEmail } = require("../services/passwordResetService");
+const { sendSignupOtp } = require("../services/emailService");
+const { generateOtp, hashOtp, verifyOtp } = require("../utils/otp");
 
 const router = express.Router();
 
@@ -23,8 +26,11 @@ const formatUser = (user) => ({
   household: user.household,
 });
 
-// POST /api/auth/signup
-router.post("/signup", async (req, res) => {
+const OTP_EXPIRE_MS = 10 * 60 * 1000;
+const MAX_OTP_ATTEMPTS = 5;
+
+// POST /api/auth/signup/send-otp
+router.post("/signup/send-otp", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -38,19 +44,129 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    const exists = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const exists = await User.findOne({ email: normalizedEmail });
     if (exists) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    const user = await User.create({ name, email, password });
+    const otp = generateOtp();
+    const otpHash = hashOtp(otp);
+    const otpExpire = new Date(Date.now() + OTP_EXPIRE_MS);
+
+    await PendingSignup.findOneAndUpdate(
+      { email: normalizedEmail },
+      {
+        name: name.trim(),
+        email: normalizedEmail,
+        password,
+        otpHash,
+        otpExpire,
+        otpAttempts: 0,
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    await sendSignupOtp({ to: normalizedEmail, name: name.trim(), otp });
+
+    res.json({
+      message: "Verification code sent to your email",
+      email: normalizedEmail,
+      expiresInMinutes: 10,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Could not send verification code" });
+  }
+});
+
+// POST /api/auth/signup/resend-otp
+router.post("/signup/resend-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const pending = await PendingSignup.findOne({
+      email: email.toLowerCase().trim(),
+    });
+
+    if (!pending) {
+      return res
+        .status(400)
+        .json({ message: "No pending signup — register again" });
+    }
+
+    const otp = generateOtp();
+    pending.otpHash = hashOtp(otp);
+    pending.otpExpire = new Date(Date.now() + OTP_EXPIRE_MS);
+    pending.otpAttempts = 0;
+    await pending.save();
+
+    await sendSignupOtp({ to: pending.email, name: pending.name, otp });
+
+    res.json({ message: "New verification code sent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Could not resend code" });
+  }
+});
+
+// POST /api/auth/signup/verify-otp
+router.post("/signup/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    const pending = await PendingSignup.findOne({
+      email: email.toLowerCase().trim(),
+    });
+
+    if (!pending) {
+      return res.status(400).json({ message: "Signup expired — please start again" });
+    }
+
+    if (pending.otpExpire < new Date()) {
+      await PendingSignup.deleteOne({ _id: pending._id });
+      return res.status(400).json({ message: "OTP expired — request a new code" });
+    }
+
+    if (pending.otpAttempts >= MAX_OTP_ATTEMPTS) {
+      return res
+        .status(429)
+        .json({ message: "Too many attempts — request a new code" });
+    }
+
+    if (!verifyOtp(otp, pending.otpHash)) {
+      pending.otpAttempts += 1;
+      await pending.save();
+      return res.status(400).json({ message: "Invalid verification code" });
+    }
+
+    const user = await User.create({
+      name: pending.name,
+      email: pending.email,
+      password: pending.password,
+    });
+
+    await PendingSignup.deleteOne({ _id: pending._id });
+
     res.status(201).json({
-      message: "Signup successful",
+      message: "Account verified",
+      token: generateToken(user._id),
       user: formatUser(user),
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+    res.status(500).json({ message: "Verification failed" });
   }
 });
 

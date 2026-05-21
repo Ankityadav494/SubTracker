@@ -27,7 +27,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Layout>
+    <Layout className="h-svh max-h-svh">
       <AuthCard
         title="Forgot password"
         subtitle={sent ? "If an account exists, we sent a reset link." : "Enter your email"}

@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Layout from "../components/Layout";
 import { getSettings, updateSettings, changePassword } from "../services/usersService";
-import { exportSubscriptions } from "../services/subscriptionService";
+
 import {
   btnPrimaryClass,
   cardClass,
@@ -36,6 +36,18 @@ const Settings = () => {
     }
   };
 
+  const handleTestEmail = async () => {
+    try {
+      setTestingEmail(true);
+      const result = await sendTestReminderEmail();
+      toast.success(result.message || "Test email sent — check your inbox");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Test email failed");
+    } finally {
+      setTestingEmail(false);
+    }
+  };
+
   const savePassword = async (e) => {
     e.preventDefault();
     try {
@@ -47,16 +59,7 @@ const Settings = () => {
     }
   };
 
-  const handleExport = async () => {
-    const blob = await exportSubscriptions();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "subtracker-export.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Export downloaded");
-  };
+
 
   if (!settings) return null;
 
@@ -100,7 +103,10 @@ const Settings = () => {
               }
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-400">
+          <p className="text-xs text-stone-500">
+            When a renewal is within this many days, SubTracker emails you a reminder (daily job; requires backend email setup).
+          </p>
+          <label className="flex items-center gap-2 text-sm text-stone-400">
             <input
               type="checkbox"
               checked={settings.emailRemindersEnabled}
@@ -136,12 +142,7 @@ const Settings = () => {
           </button>
         </form>
 
-        <div className={cardClass}>
-          <h2 className="mb-3 text-lg font-semibold text-white">Data</h2>
-          <button type="button" onClick={handleExport} className="rounded-xl border border-stone-600 px-4 py-2 text-sm text-stone-300 hover:border-orange-500/50 hover:text-orange-200">
-            Export subscriptions (CSV)
-          </button>
-        </div>
+
       </main>
     </Layout>
   );

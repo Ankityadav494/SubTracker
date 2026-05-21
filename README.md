@@ -48,7 +48,19 @@ cd ../frontend && npm install
 cp apps/backend/.env.example apps/backend/.env
 ```
 
-Set `MONGODB_URI` and `JWT_SECRET`.
+Set `MONGODB_URI`, `JWT_SECRET`, and email (`EMAIL_*`) for OTP signup and renewal reminder emails.
+
+**Brevo (Sendinblue):** use SMTP in `apps/backend/.env` — no code changes needed:
+
+| Variable | Value |
+|----------|--------|
+| `EMAIL_HOST` | `smtp-relay.brevo.com` |
+| `EMAIL_PORT` | `587` |
+| `EMAIL_USER` | Your Brevo account email |
+| `EMAIL_PASS` | SMTP key from Brevo → *SMTP & API* (not your login password) |
+| `EMAIL_FROM` | A **verified sender** in Brevo, e.g. `SubTracker <hello@yourdomain.com>` |
+
+Create the SMTP key and verify the sender in the [Brevo dashboard](https://app.brevo.com) before testing signup OTP.
 
 **Frontend** (`apps/frontend/.env`):
 
@@ -87,7 +99,8 @@ See folder-specific READMEs:
 
 | Method | Endpoint | Auth |
 |--------|----------|------|
-| POST | `/api/auth/signup` | No |
+| POST | `/api/auth/signup/send-otp` | No |
+| POST | `/api/auth/signup/verify-otp` | No |
 | POST | `/api/auth/login` | No |
 | GET | `/api/auth/me` | Yes |
 | GET/POST/PUT/DELETE | `/api/subscriptions` | Yes |

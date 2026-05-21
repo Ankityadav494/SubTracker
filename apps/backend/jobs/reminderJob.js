@@ -18,38 +18,44 @@ const addDays = (date, days) => {
 const runReminderJob = async () => {
   if (!getTransporter()) return;
 
-  const daysBefore = Number(process.env.REMINDER_DAYS_BEFORE) || 3;
   const today = startOfDay(new Date());
-  const windowEnd = addDays(today, daysBefore);
+  const users = await User.find({
+    emailRemindersEnabled: { $ne: false },
+    email: { $exists: true, $ne: "" },
+  });
 
-  const dueSoon = await Subscription.find({
-    status: "active",
-    nextBillingDate: { $gte: today, $lte: windowEnd },
-    $or: [
-      { reminderSentAt: null },
-      { reminderSentAt: { $lt: today } },
-    ],
-  }).populate("user", "name email emailRemindersEnabled reminderDaysBefore");
+  for (const user of users) {
+    const daysBefore = Math.min(
+      30,
+      Math.max(1, Number(user.reminderDaysBefore) || Number(process.env.REMINDER_DAYS_BEFORE) || 3)
+    );
+    const windowEnd = addDays(today, daysBefore);
 
-  const byUser = new Map();
+    const ownerFilter = [{ user: user._id }];
+    if (user.household) ownerFilter.push({ household: user.household });
 
-  for (const sub of dueSoon) {
-    if (!sub.user?.email) continue;
-    const key = sub.user._id.toString();
-    if (!byUser.has(key)) {
-      byUser.set(key, { user: sub.user, subscriptions: [] });
-    }
-    byUser.get(key).subscriptions.push(sub);
-  }
+    const subscriptions = await Subscription.find({
+      status: "active",
+      $and: [
+        { $or: ownerFilter },
+        { nextBillingDate: { $gte: today, $lte: windowEnd } },
+        {
+          $or: [
+            { reminderSentAt: null },
+            { reminderSentAt: { $lt: today } },
+          ],
+        },
+      ],
+    }).sort({ nextBillingDate: 1 });
 
-  for (const { user, subscriptions } of byUser.values()) {
-    if (user.emailRemindersEnabled === false) continue;
+    if (subscriptions.length === 0) continue;
 
     try {
       const sent = await sendRenewalReminder({
         to: user.email,
         userName: user.name,
         subscriptions,
+        daysBefore,
       });
 
       if (sent) {
@@ -59,7 +65,7 @@ const runReminderJob = async () => {
           { reminderSentAt: new Date() }
         );
         console.log(
-          `Reminder sent to ${user.email} (${subscriptions.length} subscription(s))`
+          `Renewal email sent to ${user.email} (${subscriptions.length} subscription(s), ${daysBefore}d window)`
         );
       }
     } catch (err) {
@@ -72,18 +78,18 @@ const startReminderCron = () => {
   const schedule = process.env.REMINDER_CRON || "0 9 * * *";
 
   if (!getTransporter()) {
-    console.log("Reminder cron skipped — configure email in .env");
+    console.log("Reminder cron skipped — configure EMAIL_* in apps/backend/.env");
     return;
   }
 
   cron.schedule(schedule, () => {
-    console.log("Running subscription reminder job...");
+    console.log("Running subscription renewal email job...");
     runReminderJob().catch((err) =>
       console.error("Reminder job error:", err)
     );
   });
 
-  console.log(`Reminder cron scheduled: ${schedule}`);
+  console.log(`Renewal reminder emails scheduled: ${schedule}`);
 };
 
 module.exports = { startReminderCron, runReminderJob };

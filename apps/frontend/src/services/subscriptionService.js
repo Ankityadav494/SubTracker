@@ -24,13 +24,3 @@ export const deleteSubscription = async (id) => {
   const res = await API.delete(`/subscriptions/${id}`);
   return res.data;
 };
-
-export const exportSubscriptions = async () => {
-  const res = await API.get("/subscriptions/export", { responseType: "blob" });
-  return res.data;
-};
-
-export const importSubscriptions = async (rows) => {
-  const res = await API.post("/subscriptions/import", { rows });
-  return res.data;
-};

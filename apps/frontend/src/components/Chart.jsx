@@ -1,9 +1,4 @@
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { statCardClass, subheadingClass } from "../utils/styles";
 
@@ -20,21 +15,18 @@ const CHART_COLORS = [
 
 const Chart = ({ subscriptions }) => {
   const categoryMap = {};
-
   subscriptions.forEach((sub) => {
     categoryMap[sub.category] =
       (categoryMap[sub.category] || 0) + Number(sub.price);
   });
 
   const labels = Object.keys(categoryMap);
-  const values = Object.values(categoryMap);
-
   const data = {
     labels,
     datasets: [
       {
         label: "Spending (₹)",
-        data: values,
+        data: Object.values(categoryMap),
         backgroundColor: CHART_COLORS.slice(0, labels.length),
         borderColor: "#0c0a09",
         borderWidth: 2,

@@ -1,19 +1,109 @@
 @import "tailwindcss";
 
-@theme {
-  --color-surface: #141210;
-  --color-surface-elevated: #1c1917;
-  --color-accent: #f97316;
-  --color-accent-soft: #fb923c;
-  --color-highlight: #f43f5e;
+/* ─── Design tokens ─────────────────────────────────────────── */
+:root {
+  /* Light (default) */
+  --app-bg:           #f0faff;        /* light blue background */
+  --app-text:         #1e293b;        /* dark gray/blue text */
+  --app-mute:         #64748b;        /* muted gray */
+  --app-border:       rgba(0,0,0,0.1);
+  --app-input-bg:     #ffffff;
+  --app-input-border: rgba(0,0,0,0.2);
+  --app-card-bg:      rgba(255,255,255,0.8);
+  --app-nav-bg:       rgba(255,255,255,0.9);
+  --app-nav-border:   rgba(0,0,0,0.1);
+  --app-item-bg:      rgba(200,230,255,0.3);
+  --app-radial:       0.06;
 }
 
+/* ─── Tailwind v4 inline theme → CSS-var-backed utilities ────── */
+@theme inline {
+  --color-app-bg:           var(--app-bg);
+  --color-app-text:         var(--app-text);
+  --color-app-mute:         var(--app-mute);
+  --color-app-border:       var(--app-border);
+  --color-app-input:        var(--app-input-bg);
+  --color-app-input-border: var(--app-input-border);
+  --color-app-card:         var(--app-card-bg);
+  --color-app-nav:          var(--app-nav-bg);
+  --color-app-nav-border:   var(--app-nav-border);
+  --color-app-item:         var(--app-item-bg);
+}
+
+/* ─── Global base styles ─────────────────────────────────────── */
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
   body {
-    @apply m-0 min-h-svh bg-[#0c0a09] text-stone-100 antialiased;
+    margin: 0;
+    min-height: 100svh;
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(59,130,246,var(--app-radial)), transparent 30%),
+      radial-gradient(circle at 85% 30%, rgba(96,165,250,var(--app-radial)), transparent 30%);
+    background-attachment: fixed;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  #root {
-    @apply min-h-svh;
+  ::selection { background: rgba(59,130,246,0.30); color: #e0e7ff; }
+
+  #root { min-height: 100svh; display: flex; flex-direction: column; }
+
+  input, select, textarea {
+    background-color: var(--app-input-bg);
+    color: var(--app-text);
+    border-color: var(--app-input-border);
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  }
+}
+
+/* ─── Shared component classes ───────────────────────────────── */
+@layer components {
+  .theme-card {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background-color 0.25s, border-color 0.25s;
+  }
+
+  .theme-nav {
+    background-color: var(--app-nav-bg);
+    border-color: var(--app-nav-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .theme-input {
+    background-color: var(--app-input-bg);
+    border-color: var(--app-input-border);
+    color: var(--app-text);
+  }
+
+  .theme-item {
+    background-color: var(--app-item-bg);
+    border-color: var(--app-border);
+  }
+}
+
+/* ─── Animations (unchanged) ────────────── */
+@layer utilities {
+  @keyframes brand-float {
+    0%, 100% { transform: translateY(0) rotate(var(--brand-tilt, 0deg)) scale(1); }
+    50% { transform: translateY(-10px) rotate(calc(var(--brand-tilt, 0deg) + 5deg)) scale(1.05); }
+  }
+  @keyframes auth-panel-glow {
+    0%, 100% { opacity: 0.45; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.75; transform: scale(1.08) rotate(8deg); }
+  }
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes brand-pop {
+    0% { transform: translateY(0) rotate(var(--brand-tilt, 0deg)) scale(1); }
+    100% { transform: translateY(-14px) rotate(0deg) scale(1.18); }
   }
 }
