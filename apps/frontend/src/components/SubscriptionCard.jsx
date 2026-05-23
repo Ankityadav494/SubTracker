@@ -2,20 +2,21 @@ import { Link } from "react-router-dom";
 import BrandLogo from "./BrandLogo";
 import { formatDate } from "../utils/dateUtils";
 import { formatCurrency, monthlyEquivalent } from "../utils/subscriptionHelpers";
+import { statCardClass } from "../utils/styles";
 
 const categoryColors = {
-  OTT: "bg-pink-500/20 text-pink-300 ring-pink-500/30",
-  Music: "bg-emerald-500/20 text-emerald-300 ring-emerald-500/30",
-  Gaming: "bg-fuchsia-500/20 text-fuchsia-300 ring-fuchsia-500/30",
-  Software: "bg-rose-500/20 text-rose-300 ring-rose-500/30",
-  Education: "bg-amber-500/20 text-amber-300 ring-amber-500/30",
-  Others: "bg-stone-500/20 text-stone-300 ring-stone-500/30",
+  OTT: "bg-pink-100 text-pink-700 ring-pink-200",
+  Music: "bg-emerald-100 text-emerald-700 ring-emerald-200",
+  Gaming: "bg-violet-100 text-violet-700 ring-violet-200",
+  Software: "bg-rose-100 text-rose-700 ring-rose-200",
+  Education: "bg-amber-100 text-amber-700 ring-amber-200",
+  Others: "bg-slate-100 text-slate-600 ring-slate-200",
 };
 
 const statusColors = {
-  active: "text-emerald-400",
-  paused: "text-amber-400",
-  cancelled: "text-stone-500",
+  active: "text-emerald-600",
+  paused: "text-amber-600",
+  cancelled: "text-slate-400",
 };
 
 const SubscriptionCard = ({ sub, onDelete }) => {
@@ -29,57 +30,59 @@ const SubscriptionCard = ({ sub, onDelete }) => {
   return (
     <div
       id={sub._id}
-      className="group flex w-full flex-col overflow-hidden rounded-2xl border border-stone-800/80 bg-gradient-to-br from-stone-900/90 to-stone-950 shadow-lg transition hover:-translate-y-0.5 hover:border-orange-500/40 hover:shadow-orange-900/20"
+      className={`group flex w-full min-w-0 flex-col overflow-hidden ${statCardClass} transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/10`}
     >
-      <div className="flex items-start gap-4 p-5">
-        <BrandLogo name={sub.name} category={sub.category} size="lg" />
+      <div className="flex items-start gap-3 p-4 sm:gap-4 sm:p-5">
+        <BrandLogo name={sub.name} category={sub.category} size="md" className="sm:hidden" />
+        <BrandLogo name={sub.name} category={sub.category} size="lg" className="hidden sm:flex" />
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
             <Link
               to={`/edit/${sub._id}`}
-              className="truncate text-lg font-semibold text-white transition group-hover:text-orange-300"
+              className="truncate text-base font-semibold text-slate-800 transition group-hover:text-sky-700 sm:text-lg"
             >
               {sub.name}
             </Link>
             <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${categoryColors[sub.category] || categoryColors.Others}`}
+              className={`w-fit shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ${categoryColors[sub.category] || categoryColors.Others}`}
             >
               {sub.category}
             </span>
           </div>
 
-          <p className="mt-2 text-2xl font-bold text-transparent bg-gradient-to-r from-orange-300 to-rose-300 bg-clip-text">
+          <p className="mt-2 text-xl font-bold text-transparent bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text sm:text-2xl">
             {formatCurrency(sub.price)}
-            <span className="text-sm font-normal text-stone-500"> / {sub.billingCycle}</span>
+            <span className="text-sm font-normal text-slate-500"> / {sub.billingCycle}</span>
           </p>
-          <p className="text-sm text-stone-400">≈ {formatCurrency(monthly)}/month</p>
+          <p className="text-xs text-slate-500 sm:text-sm">≈ {formatCurrency(monthly)}/month</p>
 
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
             <span className={statusColors[sub.status] || statusColors.active}>{sub.status}</span>
             {priceChange !== 0 && (
-              <span className={priceChange > 0 ? "text-rose-400" : "text-emerald-400"}>
+              <span className={priceChange > 0 ? "text-red-600" : "text-emerald-600"}>
                 {priceChange > 0 ? "↑" : "↓"} {formatCurrency(Math.abs(priceChange))}
               </span>
             )}
           </div>
 
-          <p className="mt-2 text-sm text-stone-500">
-            Renews <span className="font-medium text-stone-300">{formatDate(sub.nextBillingDate)}</span>
+          <p className="mt-2 text-xs text-slate-500 sm:text-sm">
+            Renews{" "}
+            <span className="font-medium text-slate-700">{formatDate(sub.nextBillingDate)}</span>
           </p>
         </div>
       </div>
 
-      <div className="flex gap-2 border-t border-stone-800/80 bg-stone-950/50 p-3">
+      <div className="flex gap-2 border-t border-sky-100 bg-sky-50/50 p-3">
         <Link
           to={`/edit/${sub._id}`}
-          className="flex-1 rounded-xl border border-stone-700 py-2 text-center text-sm text-stone-300 transition hover:border-orange-500/50 hover:bg-orange-500/10 hover:text-orange-200"
+          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-sky-200 text-center text-sm text-slate-600 transition hover:border-sky-400 hover:bg-sky-50 hover:text-sky-800"
         >
           Edit
         </Link>
         <button
           type="button"
           onClick={onDelete}
-          className="flex-1 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2 text-sm text-rose-300 transition hover:bg-rose-500/20"
+          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-red-200 bg-red-50 text-sm text-red-600 transition hover:bg-red-100"
         >
           Delete
         </button>

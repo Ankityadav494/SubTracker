@@ -1,4 +1,4 @@
-import { statCardClass, subheadingClass } from "../utils/styles";
+import { statCardClass, subheadingClass, mutedClass } from "../utils/styles";
 
 const CalendarView = ({ subscriptions }) => {
   const sorted = [...subscriptions].sort(
@@ -16,26 +16,28 @@ const CalendarView = ({ subscriptions }) => {
   };
 
   return (
-    <div className={statCardClass}>
+    <div className={`${statCardClass} min-w-0`}>
       <h3 className={`mb-4 text-left ${subheadingClass}`}>Upcoming renewals</h3>
-      <ul className="space-y-3">
+      <ul className="max-h-80 space-y-2 overflow-y-auto sm:max-h-none sm:space-y-3">
         {sorted.map((sub) => (
           <li
             key={sub._id}
-            className="flex items-center justify-between gap-4 rounded-xl border border-stone-700/80 bg-stone-800/40 px-4 py-3 transition hover:border-orange-500/40"
+            className="flex items-center justify-between gap-2 rounded-xl border border-sky-100 bg-sky-50/50 px-3 py-2.5 transition hover:border-sky-300 sm:gap-4 sm:px-4 sm:py-3"
           >
-            <div className="text-left">
-              <p className="font-medium text-stone-100">{sub.name}</p>
-              <p className="text-xs text-stone-500">{sub.category}</p>
+            <div className="min-w-0 flex-1 text-left">
+              <p className="truncate font-medium text-slate-800">{sub.name}</p>
+              <p className={`truncate text-xs ${mutedClass}`}>{sub.category}</p>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-orange-300">
+            <div className="shrink-0 text-right">
+              <p className="text-xs text-sky-700 sm:text-sm">
                 {new Date(sub.nextBillingDate).toLocaleDateString("en-IN", {
                   day: "numeric",
                   month: "short",
                 })}
               </p>
-              <p className="text-xs font-medium text-rose-400">{daysUntil(sub.nextBillingDate)}</p>
+              <p className="text-[10px] font-medium text-blue-600 sm:text-xs">
+                {daysUntil(sub.nextBillingDate)}
+              </p>
             </div>
           </li>
         ))}

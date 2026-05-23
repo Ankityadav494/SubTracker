@@ -50,7 +50,7 @@ const EditSubscription = () => {
     return (
       <Layout>
         <div className="flex min-h-svh items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
         </div>
       </Layout>
     );
@@ -63,8 +63,8 @@ const EditSubscription = () => {
         <h1 className={`mb-6 text-left ${headingClass}`}>Edit subscription</h1>
         <div className={`max-w-lg ${cardClass}`}>
           {form.priceHistory?.length > 1 && (
-            <div className="mb-4 rounded-lg border border-stone-700 bg-stone-800/50 p-3 text-left text-sm text-stone-400">
-              <p className="font-medium text-orange-300">Price history</p>
+            <div className="mb-4 rounded-xl border border-sky-100 bg-sky-50/80 p-3 text-left text-sm text-slate-600">
+              <p className="font-medium text-sky-700">Price history</p>
               <ul className="mt-2 space-y-1">
                 {[...form.priceHistory].reverse().slice(0, 5).map((h, i) => (
                   <li key={i}>

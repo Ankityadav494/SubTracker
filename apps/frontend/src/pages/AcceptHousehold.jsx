@@ -29,7 +29,7 @@ const AcceptHousehold = () => {
   return (
     <Layout>
       <div className="flex min-h-svh items-center justify-center">
-        <p className="text-stone-400">Accepting invite...</p>
+        <p className="text-slate-500">Accepting invite...</p>
       </div>
     </Layout>
   );

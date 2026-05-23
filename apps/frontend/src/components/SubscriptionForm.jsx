@@ -81,7 +81,7 @@ const SubscriptionForm = ({
     </div>
 
     {showHousehold && (
-      <label className="flex items-center gap-2 text-sm text-stone-400">
+      <label className="flex items-center gap-2 text-sm text-slate-600">
         <input type="checkbox" checked={!!form.shareWithHousehold} onChange={(e) => setForm({ ...form, shareWithHousehold: e.target.checked })} className="rounded" />
         Share with household members
       </label>

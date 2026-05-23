@@ -7,12 +7,14 @@ function App() {
   return (
     <AuthProvider>
       <Toaster
-        position="top-right"
+        position="top-center"
+        containerClassName="!top-3 sm:!top-4"
         toastOptions={{
           style: {
-            background: "#1c1917",
-            color: "#fafaf9",
-            border: "1px solid #44403c",
+            background: "#ffffff",
+            color: "#1e293b",
+            border: "1px solid #bae6fd",
+            boxShadow: "0 10px 25px rgba(14, 165, 233, 0.15)",
           },
         }}
       />

@@ -10,7 +10,9 @@ import {
   headingClass,
   inputClass,
   labelClass,
+  mutedClass,
   pageClass,
+  subheadingClass,
 } from "../utils/styles";
 
 const Settings = () => {
@@ -36,18 +38,6 @@ const Settings = () => {
     }
   };
 
-  const handleTestEmail = async () => {
-    try {
-      setTestingEmail(true);
-      const result = await sendTestReminderEmail();
-      toast.success(result.message || "Test email sent — check your inbox");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Test email failed");
-    } finally {
-      setTestingEmail(false);
-    }
-  };
-
   const savePassword = async (e) => {
     e.preventDefault();
     try {
@@ -70,7 +60,7 @@ const Settings = () => {
         <h1 className={`mb-8 text-left ${headingClass}`}>Settings</h1>
 
         <form onSubmit={saveSettings} className={`mb-8 ${cardClass} space-y-4`}>
-          <h2 className="text-lg font-semibold text-white">Profile & budget</h2>
+          <h2 className={subheadingClass}>Profile & budget</h2>
           <div>
             <label className={labelClass}>Name</label>
             <input className={inputClass} value={settings.name} onChange={(e) => setSettings({ ...settings, name: e.target.value })} />
@@ -103,10 +93,10 @@ const Settings = () => {
               }
             />
           </div>
-          <p className="text-xs text-stone-500">
+          <p className={`text-xs ${mutedClass}`}>
             When a renewal is within this many days, SubTracker emails you a reminder (daily job; requires backend email setup).
           </p>
-          <label className="flex items-center gap-2 text-sm text-stone-400">
+          <label className={`flex items-center gap-2 text-sm ${mutedClass}`}>
             <input
               type="checkbox"
               checked={settings.emailRemindersEnabled}
@@ -122,7 +112,7 @@ const Settings = () => {
         </form>
 
         <form onSubmit={savePassword} className={`mb-8 ${cardClass} space-y-4`}>
-          <h2 className="text-lg font-semibold text-white">Change password</h2>
+          <h2 className={subheadingClass}>Change password</h2>
           <input
             type="password"
             placeholder="Current password"

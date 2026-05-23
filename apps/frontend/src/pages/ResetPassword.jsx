@@ -29,7 +29,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <Layout className="h-svh max-h-svh">
+    <Layout className="auth-viewport" showChatBot={false}>
       <AuthCard title="Reset password" footer={<Link to="/login" className={linkClass}>Login</Link>}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <p className={errorClass}>{error}</p>}

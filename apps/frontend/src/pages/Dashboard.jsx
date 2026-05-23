@@ -17,7 +17,15 @@ import ConfirmModal from "../components/ConfirmModal";
 import InteractiveBrandBelt from "../components/InteractiveBrandBelt";
 import { getSubscriptions, deleteSubscription } from "../services/subscriptionService";
 import { getOverview, getTrends, getSavings } from "../services/analyticsService";
-import { headingClass, pageClass } from "../utils/styles";
+import {
+  btnSignupClass,
+  cardClass,
+  headingClass,
+  linkClass,
+  mutedClass,
+  pageClass,
+  subheadingClass,
+} from "../utils/styles";
 
 const Dashboard = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -91,26 +99,23 @@ const Dashboard = () => {
     <Layout>
       <Navbar />
       <main className={pageClass}>
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className={headingClass}>Dashboard</h1>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to="/add"
-              className="rounded-xl bg-gradient-to-r from-orange-500 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-orange-900/40 hover:from-orange-400 hover:to-rose-400"
-            >
-              + Add
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <h1 className={`${headingClass} text-left`}>Dashboard</h1>
+          <div className="flex w-full sm:w-auto">
+            <Link to="/add" className={`${btnSignupClass} w-full sm:w-auto`}>
+              + Add subscription
             </Link>
           </div>
         </div>
 
         {loading && (
-          <div className="flex items-center gap-3 text-stone-400">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          <div className={`flex items-center gap-3 ${mutedClass}`}>
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-sky-500 border-t-transparent" />
             Loading...
           </div>
         )}
 
-        {error && <p className="mb-4 text-rose-300">{error}</p>}
+        {error && <p className="mb-4 text-red-600">{error}</p>}
 
         {!loading && overview && (
           <>
@@ -121,10 +126,10 @@ const Dashboard = () => {
         )}
 
         {!loading && subscriptions.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-stone-700 px-6 py-12">
+          <div className={`rounded-2xl border border-dashed border-sky-200 px-6 py-12 ${cardClass}`}>
             <TemplatePicker onSelect={handleTemplate} />
-            <p className="text-stone-500">Or add a custom subscription manually.</p>
-            <Link to="/add" className="mt-4 inline-block font-medium text-orange-400 hover:text-orange-300">
+            <p className={mutedClass}>Or add a custom subscription manually.</p>
+            <Link to="/add" className={`mt-4 inline-block ${linkClass}`}>
               Add subscription →
             </Link>
           </div>
@@ -136,7 +141,7 @@ const Dashboard = () => {
             <SubscriptionFilters filters={filters} onChange={setFilters} />
 
             <section className="mb-8">
-              <h2 className="mb-4 text-left text-lg font-semibold text-stone-100">
+              <h2 className={`mb-4 text-left ${subheadingClass}`}>
                 Subscriptions
               </h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -150,12 +155,12 @@ const Dashboard = () => {
               </div>
             </section>
 
-            <section className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <section className="mb-8 grid grid-cols-1 gap-4 min-w-0 sm:gap-6 lg:grid-cols-2">
               <Chart subscriptions={subscriptions.filter((s) => s.status === "active")} />
               <SpendBreakdown breakdown={overview?.breakdown} />
             </section>
 
-            <section className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <section className="mb-8 grid grid-cols-1 gap-4 min-w-0 sm:gap-6 lg:grid-cols-2">
               <SpendingTrendChart trends={trends} />
               <CalendarView subscriptions={subscriptions} />
             </section>

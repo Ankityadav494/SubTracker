@@ -22,32 +22,26 @@ const BRANDS = [
 
 const TILTS = [-10, 8, -6, 12, -8, 6, -12, 10, -5, 7, -9, 11, -7, 9, -11, 5];
 
-/** Big playful grid for login / signup */
 const BrandGrid = () => {
   const [hoveredName, setHoveredName] = useState(null);
 
   return (
-    <div className="relative flex h-full min-h-0 w-full flex-col justify-center overflow-hidden rounded-3xl border-2 border-orange-500/30 bg-stone-950/80 p-4 shadow-[0_0_60px_-12px_rgba(249,115,22,0.45)] backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_0_80px_-8px_rgba(249,115,22,0.55)] sm:p-5">
+    <div className="relative flex h-full min-h-0 w-full flex-col justify-center overflow-hidden rounded-2xl border-2 border-sky-200 bg-white/90 p-3 shadow-[0_0_60px_-12px_rgba(14,165,233,0.25)] backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_0_80px_-8px_rgba(14,165,233,0.35)] sm:rounded-3xl sm:p-5">
       <div
-        className="pointer-events-none absolute -left-8 -top-8 h-40 w-40 rounded-full bg-orange-500/25 blur-3xl animate-auth-glow"
+        className="pointer-events-none absolute -left-8 -top-8 h-32 w-32 rounded-full bg-sky-400/20 blur-3xl animate-auth-glow sm:h-40 sm:w-40"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -bottom-10 -right-6 h-44 w-44 rounded-full bg-rose-500/20 blur-3xl animate-auth-glow"
+        className="pointer-events-none absolute -bottom-10 -right-6 h-36 w-36 rounded-full bg-blue-400/15 blur-3xl animate-auth-glow sm:h-44 sm:w-44"
         style={{ animationDelay: "1.5s" }}
         aria-hidden
       />
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-500/15 blur-2xl animate-auth-glow"
-        style={{ animationDelay: "3s" }}
-        aria-hidden
-      />
 
-      <p className="relative z-10 mb-4 shrink-0 text-center text-sm font-black uppercase tracking-[0.2em] text-transparent bg-gradient-to-r from-orange-300 via-amber-200 to-rose-400 bg-clip-text transition-all duration-500 sm:text-base">
+      <p className="relative z-10 mb-3 shrink-0 text-center text-xs font-black uppercase tracking-[0.15em] text-transparent bg-gradient-to-r from-sky-600 via-blue-600 to-cyan-600 bg-clip-text sm:mb-4 sm:text-sm sm:tracking-[0.2em]">
         Your subs, one place ✦
       </p>
 
-      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-4 place-items-center gap-2 sm:gap-3">
+      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-4 place-items-center gap-1.5 sm:gap-3">
         {BRANDS.map((b, i) => {
           const isHovered = hoveredName === b.name;
           const isDimmed = hoveredName && !isHovered;
@@ -56,12 +50,10 @@ const BrandGrid = () => {
             <button
               key={b.name}
               type="button"
-              className={`brand-tile group relative flex cursor-pointer items-center justify-center rounded-3xl p-1 outline-none transition-all duration-500 ease-out focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-950 ${
+              className={`brand-tile group relative flex cursor-pointer items-center justify-center rounded-2xl p-0.5 outline-none transition-all duration-500 ease-out focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:rounded-3xl sm:p-1 ${
                 isDimmed ? "scale-90 opacity-35 blur-[0.5px]" : "opacity-100"
               } ${isHovered ? "z-20 scale-105" : "z-0"}`}
-              style={{
-                ["--brand-tilt"]: `${TILTS[i % TILTS.length]}deg`,
-              }}
+              style={{ ["--brand-tilt"]: `${TILTS[i % TILTS.length]}deg` }}
               onMouseEnter={() => setHoveredName(b.name)}
               onMouseLeave={() => setHoveredName(null)}
               onFocus={() => setHoveredName(b.name)}
@@ -69,13 +61,12 @@ const BrandGrid = () => {
               aria-label={b.name}
             >
               <div
-                className={`brand-tile-glow absolute inset-0 rounded-3xl blur-xl transition-all duration-500 ease-out ${
+                className={`brand-tile-glow absolute inset-0 rounded-2xl blur-xl transition-all duration-500 ease-out sm:rounded-3xl ${
                   isHovered ? "scale-[1.35] opacity-95" : "scale-90 opacity-50"
                 }`}
                 style={{ backgroundColor: `#${b.color}` }}
                 aria-hidden
               />
-
               <div
                 className={`brand-tile-float ${isHovered ? "brand-tile-float-paused" : ""}`}
                 style={{ animationDelay: `${(i % 8) * 0.2}s` }}
@@ -85,19 +76,16 @@ const BrandGrid = () => {
                   slug={b.slug}
                   brandColor={b.color}
                   size="hero"
-                  className={`brand-tile-logo relative z-10 ring-4 transition-all duration-500 ease-out ${
+                  className={`brand-tile-logo relative z-10 ring-2 transition-all duration-500 ease-out sm:ring-4 ${
                     isHovered
-                      ? "rotate-0 ring-orange-300/80 shadow-[0_0_40px_rgba(249,115,22,0.65)]"
-                      : "rotate-[var(--brand-tilt)] ring-white/25"
+                      ? "rotate-0 ring-sky-300/80 shadow-[0_0_40px_rgba(14,165,233,0.45)]"
+                      : "rotate-[var(--brand-tilt)] ring-slate-200/80"
                   }`}
                 />
               </div>
-
               <span
-                className={`pointer-events-none absolute -bottom-1 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full border border-orange-500/40 bg-stone-900/95 px-2.5 py-1 text-[10px] font-bold text-orange-200 shadow-lg backdrop-blur-sm transition-all duration-300 ease-out sm:text-xs ${
-                  isHovered
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-2 opacity-0"
+                className={`pointer-events-none absolute -bottom-1 left-1/2 z-30 hidden -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-200 bg-white/95 px-2.5 py-1 text-[10px] font-bold text-sky-700 shadow-lg backdrop-blur-sm transition-all duration-300 ease-out sm:block sm:text-xs ${
+                  isHovered ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
                 }`}
               >
                 {b.name}
@@ -110,7 +98,34 @@ const BrandGrid = () => {
   );
 };
 
+/** Horizontal scroll strip for mobile auth */
+const BrandScroll = () => (
+  <div className="w-full overflow-hidden rounded-2xl border border-sky-200 bg-white/90 p-3 shadow-md shadow-sky-900/5">
+    <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-widest text-sky-600">
+      Track your favorite apps
+    </p>
+    <div className="scrollbar-thin flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+      {BRANDS.map((b) => (
+        <div
+          key={b.name}
+          className="flex shrink-0 snap-center flex-col items-center gap-1.5"
+          aria-hidden
+        >
+          <BrandLogo name={b.name} slug={b.slug} brandColor={b.color} size="md" />
+          <span className="max-w-[4.5rem] truncate text-[10px] font-medium text-slate-600">
+            {b.name}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 const BrandStrip = ({ variant = "grid" }) => {
+  if (variant === "scroll") {
+    return <BrandScroll />;
+  }
+
   if (variant === "grid") {
     return <BrandGrid />;
   }
@@ -119,16 +134,16 @@ const BrandStrip = ({ variant = "grid" }) => {
   const lane2 = BRANDS.slice(8);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-stone-800/80 bg-stone-900/60 p-4">
-      <p className="mb-2 text-center text-xs font-semibold uppercase text-stone-500">
+    <div className="relative w-full overflow-hidden rounded-2xl border border-sky-100 bg-white/90 p-4 shadow-md shadow-sky-900/5">
+      <p className="mb-2 text-center text-xs font-semibold uppercase text-slate-500">
         Track your favorite apps
       </p>
-      <div className="flex gap-6 overflow-hidden py-2">
+      <div className="scrollbar-thin flex gap-4 overflow-x-auto py-2 sm:gap-6">
         {[...lane1, ...lane1].map((b, idx) => (
           <BrandLogo key={`${b.name}-${idx}`} name={b.name} slug={b.slug} brandColor={b.color} size="md" />
         ))}
       </div>
-      <div className="flex gap-6 overflow-hidden py-2">
+      <div className="scrollbar-thin flex gap-4 overflow-x-auto py-2 sm:gap-6">
         {[...lane2, ...lane2].map((b, idx) => (
           <BrandLogo key={`${b.name}-2-${idx}`} name={b.name} slug={b.slug} brandColor={b.color} size="md" />
         ))}

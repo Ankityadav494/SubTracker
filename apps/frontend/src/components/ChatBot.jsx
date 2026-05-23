@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
+import { inputClass } from "../utils/styles";
 
 const BotIcon = ({ className = "h-6 w-6" }) => (
   <svg
@@ -125,8 +126,10 @@ const ChatBot = () => {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-900/40 transition-all duration-300 hover:scale-[1.03] hover:from-orange-400 hover:to-rose-400 hover:shadow-orange-500/30 ${
-          open ? "h-12 w-12 justify-center px-0" : "h-14 max-w-[calc(100vw-2.5rem)] px-4 pr-5 sm:px-5"
+        className={`fixed z-50 flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 transition-all duration-300 hover:from-sky-400 hover:to-blue-500 hover:shadow-sky-500/40 ${
+          open
+            ? "bottom-[max(1rem,env(safe-area-inset-bottom))] right-3 h-12 w-12 sm:right-5"
+            : "bottom-[max(1rem,env(safe-area-inset-bottom))] right-3 h-14 gap-2 px-3 sm:right-5 sm:gap-2.5 sm:px-5"
         }`}
         aria-label={open ? "Close YaarBot" : "Chat with YaarBot"}
         aria-expanded={open}
@@ -140,9 +143,11 @@ const ChatBot = () => {
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/30">
               <BotIcon className="h-5 w-5" />
             </span>
-            <span className="flex flex-col items-start text-left leading-tight">
+            <span className="hidden flex-col items-start text-left leading-tight min-[380px]:flex">
               <span className="text-sm font-bold tracking-tight">YaarBot</span>
-              <span className="text-[11px] font-medium text-white/85">Chat with YaarBot</span>
+              <span className="hidden text-[11px] font-medium text-white/85 sm:inline">
+                Chat with YaarBot
+              </span>
             </span>
           </>
         )}
@@ -150,23 +155,25 @@ const ChatBot = () => {
 
       {open && (
         <div
-          className="fixed bottom-24 right-5 z-50 flex w-80 flex-col overflow-hidden rounded-2xl border border-stone-700 bg-stone-900 shadow-2xl sm:w-96"
-          style={{ maxHeight: "70vh" }}
+          className="fixed left-3 right-3 z-50 flex max-h-[min(70dvh,520px)] flex-col overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl shadow-sky-900/10 sm:left-auto sm:right-5 sm:w-96"
+          style={{
+            bottom: "max(5rem, calc(4.5rem + env(safe-area-inset-bottom, 0px)))",
+          }}
         >
-          <div className="flex items-center justify-between border-b border-stone-800 bg-stone-950/80 px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-rose-500 text-white ring-2 ring-orange-500/30">
-                <BotIcon className="h-5 w-5" />
+          <div className="flex shrink-0 items-center justify-between border-b border-sky-100 bg-sky-50/80 px-3 py-2.5 sm:px-4 sm:py-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-blue-600 text-white ring-2 ring-sky-200 sm:h-9 sm:w-9">
+                <BotIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </span>
-              <div>
-                <h3 className="text-sm font-semibold text-orange-300">YaarBot</h3>
-                <p className="text-[10px] text-stone-500">Your subscription assistant</p>
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-semibold text-sky-700">YaarBot</h3>
+                <p className="truncate text-[10px] text-slate-500">Your subscription assistant</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setMessages([])}
-              className="text-xs text-stone-400 hover:text-orange-300"
+              className="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-sky-50 hover:text-sky-600"
             >
               Clear
             </button>
@@ -174,13 +181,12 @@ const ChatBot = () => {
 
           <div
             ref={scrollRef}
-            className="flex-1 space-y-3 overflow-y-auto bg-stone-950/50 p-4"
-            style={{ minHeight: "200px", maxHeight: "50vh" }}
+            className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-slate-50/50 p-3 sm:p-4"
           >
             {messages.length === 0 && (
-              <div className="py-6 text-center">
-                <p className="text-sm font-medium text-stone-300">Hi! I&apos;m YaarBot</p>
-                <p className="mt-1 text-xs text-stone-500">
+              <div className="py-4 text-center sm:py-6">
+                <p className="text-sm font-medium text-slate-700">Hi! I&apos;m YaarBot</p>
+                <p className="mt-1 text-xs text-slate-500">
                   Ask about your spend, renewals, or budget
                 </p>
               </div>
@@ -192,10 +198,10 @@ const ChatBot = () => {
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm whitespace-pre-wrap ${
+                  className={`max-w-[90%] break-words rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap sm:max-w-[85%] sm:px-3.5 sm:py-2.5 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white"
-                      : "border border-stone-700 bg-stone-800 text-stone-100"
+                      ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white"
+                      : "border border-sky-100 bg-white text-slate-700 shadow-sm"
                   }`}
                 >
                   {msg.content}
@@ -204,11 +210,11 @@ const ChatBot = () => {
             ))}
 
             {loading && (
-              <p className="text-sm text-orange-400">Reading your dashboard...</p>
+              <p className="text-sm text-sky-600">Reading your dashboard...</p>
             )}
           </div>
 
-          <div className="border-t border-stone-800 bg-stone-950/80 p-3">
+          <div className="shrink-0 border-t border-sky-100 bg-white p-2.5 sm:p-3">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -217,13 +223,14 @@ const ChatBot = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Message YaarBot..."
                 disabled={loading}
-                className="flex-1 rounded-xl border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 placeholder-stone-500 outline-none focus:border-orange-500"
+                className={`${inputClass} min-h-[44px] flex-1 py-2 text-sm`}
               />
               <button
                 type="button"
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
-                className="rounded-xl bg-gradient-to-r from-orange-500 to-rose-500 px-3 font-bold text-white disabled:opacity-40"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-lg font-bold text-white disabled:opacity-40"
+                aria-label="Send message"
               >
                 →
               </button>

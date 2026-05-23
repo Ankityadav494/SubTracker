@@ -1,11 +1,11 @@
 import { formatCurrency } from "../utils/subscriptionHelpers";
-import { statCardClass } from "../utils/styles";
+import { statCardClass, mutedClass } from "../utils/styles";
 
 const statAccents = [
-  "from-orange-500/20 to-transparent border-orange-500/20",
-  "from-rose-500/20 to-transparent border-rose-500/20",
-  "from-amber-500/20 to-transparent border-amber-500/20",
-  "from-emerald-500/20 to-transparent border-emerald-500/20",
+  "from-sky-500/15 to-transparent border-sky-200",
+  "from-blue-500/15 to-transparent border-blue-200",
+  "from-cyan-500/15 to-transparent border-cyan-200",
+  "from-emerald-500/15 to-transparent border-emerald-200",
 ];
 
 const DashboardStats = ({ overview }) => {
@@ -20,18 +20,26 @@ const DashboardStats = ({ overview }) => {
       value: overview.breakdown?.[0]
         ? `${overview.breakdown[0].name} (${overview.breakdown[0].percentOfTotal}%)`
         : "—",
+      truncate: true,
     },
   ];
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-6 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-4 lg:gap-4">
       {stats.map((stat, i) => (
         <div
           key={stat.label}
-          className={`${statCardClass} border bg-gradient-to-br ${statAccents[i % statAccents.length]}`}
+          className={`${statCardClass} min-w-0 border bg-gradient-to-br ${statAccents[i % statAccents.length]}`}
         >
-          <p className="text-sm text-stone-400">{stat.label}</p>
-          <p className="mt-1 text-2xl font-bold text-stone-50">{stat.value}</p>
+          <p className={`text-xs sm:text-sm ${mutedClass}`}>{stat.label}</p>
+          <p
+            className={`mt-1 text-xl font-bold text-slate-800 sm:text-2xl ${
+              stat.truncate ? "truncate" : ""
+            }`}
+            title={stat.truncate ? String(stat.value) : undefined}
+          >
+            {stat.value}
+          </p>
         </div>
       ))}
     </div>

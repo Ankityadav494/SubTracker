@@ -5,13 +5,29 @@ import { statCardClass, subheadingClass } from "../utils/styles";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CHART_COLORS = [
-  "#f97316",
-  "#f43f5e",
+  "#0ea5e9",
+  "#2563eb",
   "#10b981",
-  "#f59e0b",
-  "#d946ef",
-  "#78716c",
+  "#06b6d4",
+  "#8b5cf6",
+  "#64748b",
 ];
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: {
+        color: "#475569",
+        padding: 12,
+        boxWidth: 12,
+        font: { size: 11 },
+      },
+    },
+  },
+};
 
 const Chart = ({ subscriptions }) => {
   const categoryMap = {};
@@ -28,26 +44,26 @@ const Chart = ({ subscriptions }) => {
         label: "Spending (₹)",
         data: Object.values(categoryMap),
         backgroundColor: CHART_COLORS.slice(0, labels.length),
-        borderColor: "#0c0a09",
+        borderColor: "#ffffff",
         borderWidth: 2,
       },
     ],
   };
 
-  const options = {
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { color: "#a8a29e", padding: 16 },
-      },
-    },
-  };
+  if (labels.length === 0) {
+    return (
+      <div className={statCardClass}>
+        <h3 className={`mb-2 text-left ${subheadingClass}`}>Category spending</h3>
+        <p className="text-sm text-slate-500">No active subscriptions to chart.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className={statCardClass}>
+    <div className={`${statCardClass} min-w-0`}>
       <h3 className={`mb-4 text-left ${subheadingClass}`}>Category spending</h3>
-      <div className="mx-auto max-h-72 max-w-sm">
-        <Pie data={data} options={options} />
+      <div className="relative mx-auto aspect-square w-full max-w-xs sm:max-w-sm">
+        <Pie data={data} options={chartOptions} />
       </div>
     </div>
   );

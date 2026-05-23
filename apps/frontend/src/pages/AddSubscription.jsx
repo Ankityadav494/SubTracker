@@ -7,7 +7,7 @@ import SubscriptionForm from "../components/SubscriptionForm";
 import TemplatePicker from "../components/TemplatePicker";
 import { addSubscription } from "../services/subscriptionService";
 import { useAuth } from "../hooks/useAuth";
-import { cardClass, headingClass } from "../utils/styles";
+import { cardClass, headingClass, mutedClass } from "../utils/styles";
 import { defaultBillingDate } from "../utils/templates";
 
 const AddSubscription = () => {
@@ -62,10 +62,10 @@ const AddSubscription = () => {
   return (
     <Layout>
       <Navbar />
-      <main className="mx-auto w-full max-w-5xl px-4 pb-16 pt-8 lg:px-6">
+      <main className="mx-auto w-full max-w-5xl px-3 pb-12 pt-4 sm:px-4 sm:pb-16 sm:pt-6 lg:px-6">
         <header className="mb-8 text-center sm:text-left">
           <h1 className={headingClass}>Add subscription</h1>
-          <p className="mt-2 text-sm text-stone-500">
+          <p className={`mt-2 text-sm ${mutedClass}`}>
             Pick a platform, type its name for suggestions, or fill the form manually
           </p>
         </header>
@@ -78,11 +78,11 @@ const AddSubscription = () => {
             role="separator"
             aria-label="Manual entry"
           >
-            <div className="h-px flex-1 bg-stone-800" />
-            <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-stone-500">
+            <div className="h-px flex-1 bg-sky-200" />
+            <span className={`shrink-0 text-xs font-semibold uppercase tracking-wide ${mutedClass}`}>
               Or enter manually
             </span>
-            <div className="h-px flex-1 bg-stone-800" />
+            <div className="h-px flex-1 bg-sky-200" />
           </div>
 
           <div className="mx-auto w-full max-w-2xl">

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BrandLogo from "./BrandLogo";
 import { searchPlatforms } from "../utils/templates";
 import { formatCurrency, monthlyEquivalent } from "../utils/subscriptionHelpers";
-import { inputClass, labelClass } from "../utils/styles";
+import { inputClass, labelClass, mutedClass } from "../utils/styles";
 
 const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
   const [open, setOpen] = useState(false);
@@ -74,7 +74,7 @@ const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
         className={inputClass}
         placeholder="Type Netflix, Spotify, Prime..."
       />
-      <p className="mt-1 text-xs text-stone-500">
+      <p className={`mt-1 text-xs ${mutedClass}`}>
         Start typing — matching platforms will appear
       </p>
 
@@ -82,7 +82,7 @@ const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-stone-700 bg-stone-900 py-1 shadow-2xl"
+          className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-sky-200 bg-white py-1 shadow-2xl shadow-sky-900/10"
         >
           {suggestions.map((platform, i) => (
             <li key={platform.name} role="option" aria-selected={i === highlight}>
@@ -92,8 +92,8 @@ const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
                 onClick={() => pick(platform)}
                 className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors ${
                   i === highlight
-                    ? "bg-orange-500/15 text-stone-100"
-                    : "text-stone-300 hover:bg-stone-800"
+                    ? "bg-sky-50 text-slate-800"
+                    : "text-slate-600 hover:bg-sky-50"
                 }`}
               >
                 <BrandLogo
@@ -104,7 +104,7 @@ const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{platform.name}</span>
-                  <span className="text-xs text-stone-500">
+                  <span className={`text-xs ${mutedClass}`}>
                     {platform.category}
                     {platform.price > 0 &&
                       ` · ${formatCurrency(monthlyEquivalent(platform.price, platform.billingCycle))}/mo`}
@@ -117,7 +117,7 @@ const PlatformNameAutocomplete = ({ value, onChange, onSelectPlatform }) => {
       )}
 
       {open && value.trim().length >= 2 && suggestions.length === 0 && (
-        <p className="absolute z-50 mt-1 w-full rounded-xl border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-500 shadow-lg">
+        <p className={`absolute z-50 mt-1 w-full rounded-xl border border-sky-200 bg-white px-3 py-2 text-sm shadow-lg ${mutedClass}`}>
           No match — you can still add a custom name
         </p>
       )}

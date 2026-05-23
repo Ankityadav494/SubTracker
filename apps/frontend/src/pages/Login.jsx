@@ -56,7 +56,7 @@ const Login = () => {
   };
 
   return (
-    <Layout className="h-svh max-h-svh">
+    <Layout className="auth-viewport" showChatBot={false}>
       <AuthCard
         title="Welcome back"
         subtitle="Sign in to manage your subscriptions"
@@ -72,10 +72,10 @@ const Login = () => {
         <OAuthButtons />
         <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-stone-700" />
+            <div className="w-full border-t border-sky-200" />
           </div>
           <div className="relative flex justify-center text-[10px] uppercase tracking-wide sm:text-xs">
-            <span className="bg-stone-900/70 px-2 text-stone-500">Or with email</span>
+            <span className="bg-white/90 px-2 text-slate-500">Or with email</span>
           </div>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">

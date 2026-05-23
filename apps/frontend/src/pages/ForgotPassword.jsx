@@ -27,7 +27,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Layout className="h-svh max-h-svh">
+    <Layout className="auth-viewport" showChatBot={false}>
       <AuthCard
         title="Forgot password"
         subtitle={sent ? "If an account exists, we sent a reset link." : "Enter your email"}

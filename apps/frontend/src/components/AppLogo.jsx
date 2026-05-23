@@ -13,17 +13,18 @@ const AppLogo = ({
   showText = true,
   size = "md",
   textClassName = "text-xl font-bold tracking-tight",
+  onClick,
 }) => {
   const inner = (
     <>
       <img
         src={logo}
         alt="SubTracker"
-        className={`${imgSizes[size]} shrink-0 rounded-xl object-cover shadow-md ring-1 ring-stone-700/60`}
+        className={`${imgSizes[size]} shrink-0 rounded-xl object-cover shadow-md ring-2 ring-sky-100`}
       />
       {showText && (
         <span
-          className={`bg-gradient-to-r from-orange-300 to-rose-300 bg-clip-text text-transparent ${textClassName}`}
+          className={`bg-gradient-to-r from-sky-700 to-blue-600 bg-clip-text text-transparent ${textClassName}`}
         >
           SubTracker
         </span>
@@ -35,7 +36,7 @@ const AppLogo = ({
 
   if (to) {
     return (
-      <Link to={to} className={wrapClass}>
+      <Link to={to} className={wrapClass} onClick={onClick}>
         {inner}
       </Link>
     );

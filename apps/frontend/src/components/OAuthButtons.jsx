@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { loginWithGoogle, loginWithGithub } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
 import { GOOGLE_CLIENT_ID, GITHUB_CLIENT_ID } from "../utils/constants";
+import { btnSecondaryClass } from "../utils/styles";
 
 const OAuthButtons = () => {
   const googleRef = useRef(null);
@@ -27,13 +28,23 @@ const OAuthButtons = () => {
       },
     });
 
-    if (googleRef.current) {
+    const renderGoogle = () => {
+      if (!googleRef.current) return;
+      googleRef.current.innerHTML = "";
+      const width = Math.min(googleRef.current.offsetWidth || 320, 400);
       window.google.accounts.id.renderButton(googleRef.current, {
         theme: "outline",
         size: "large",
-        width: googleRef.current.offsetWidth || 400,
+        width,
       });
-    }
+    };
+
+    renderGoogle();
+
+    const observer = new ResizeObserver(renderGoogle);
+    if (googleRef.current) observer.observe(googleRef.current);
+
+    return () => observer.disconnect();
   }, [navigate, setUser]);
 
   const handleGithub = () => {
@@ -48,15 +59,18 @@ const OAuthButtons = () => {
   if (!GOOGLE_CLIENT_ID && !GITHUB_CLIENT_ID) return null;
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex w-full min-w-0 flex-col gap-2">
       {GOOGLE_CLIENT_ID && (
-        <div ref={googleRef} className="flex w-full justify-center [&>div]:w-full [&_iframe]:!w-full" />
+        <div
+          ref={googleRef}
+          className="flex w-full min-w-0 justify-center overflow-hidden [&>div]:!w-full [&>div]:!max-w-full [&_iframe]:!max-w-full"
+        />
       )}
       {GITHUB_CLIENT_ID && (
         <button
           type="button"
           onClick={handleGithub}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-stone-600 bg-stone-800/60 px-4 py-2.5 text-sm font-medium text-stone-200 hover:border-orange-500/50 hover:bg-stone-800"
+          className={`flex w-full min-h-[44px] items-center justify-center gap-2 ${btnSecondaryClass}`}
         >
           Continue with GitHub
         </button>

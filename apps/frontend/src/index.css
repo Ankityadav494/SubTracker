@@ -1,109 +1,130 @@
 @import "tailwindcss";
 
-/* ─── Design tokens ─────────────────────────────────────────── */
-:root {
-  /* Light (default) */
-  --app-bg:           #f0faff;        /* light blue background */
-  --app-text:         #1e293b;        /* dark gray/blue text */
-  --app-mute:         #64748b;        /* muted gray */
-  --app-border:       rgba(0,0,0,0.1);
-  --app-input-bg:     #ffffff;
-  --app-input-border: rgba(0,0,0,0.2);
-  --app-card-bg:      rgba(255,255,255,0.8);
-  --app-nav-bg:       rgba(255,255,255,0.9);
-  --app-nav-border:   rgba(0,0,0,0.1);
-  --app-item-bg:      rgba(200,230,255,0.3);
-  --app-radial:       0.06;
-}
-
-/* ─── Tailwind v4 inline theme → CSS-var-backed utilities ────── */
-@theme inline {
-  --color-app-bg:           var(--app-bg);
-  --color-app-text:         var(--app-text);
-  --color-app-mute:         var(--app-mute);
-  --color-app-border:       var(--app-border);
-  --color-app-input:        var(--app-input-bg);
-  --color-app-input-border: var(--app-input-border);
-  --color-app-card:         var(--app-card-bg);
-  --color-app-nav:          var(--app-nav-bg);
-  --color-app-nav-border:   var(--app-nav-border);
-  --color-app-item:         var(--app-item-bg);
-}
-
-/* ─── Global base styles ─────────────────────────────────────── */
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
+  html {
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
 
   body {
-    margin: 0;
-    min-height: 100svh;
-    background-color: var(--app-bg);
-    color: var(--app-text);
-    -webkit-font-smoothing: antialiased;
-    background-image:
-      radial-gradient(circle at 15% 50%, rgba(59,130,246,var(--app-radial)), transparent 30%),
-      radial-gradient(circle at 85% 30%, rgba(96,165,250,var(--app-radial)), transparent 30%);
-    background-attachment: fixed;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    @apply m-0 min-h-svh overflow-x-clip bg-sky-50 text-slate-800 antialiased;
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
   }
 
-  ::selection { background: rgba(59,130,246,0.30); color: #e0e7ff; }
-
-  #root { min-height: 100svh; display: flex; flex-direction: column; }
-
-  input, select, textarea {
-    background-color: var(--app-input-bg);
-    color: var(--app-text);
-    border-color: var(--app-input-border);
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-  }
-}
-
-/* ─── Shared component classes ───────────────────────────────── */
-@layer components {
-  .theme-card {
-    background-color: var(--app-card-bg);
-    border-color: var(--app-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: background-color 0.25s, border-color 0.25s;
+  #root {
+    @apply min-h-svh overflow-x-clip;
   }
 
-  .theme-nav {
-    background-color: var(--app-nav-bg);
-    border-color: var(--app-nav-border);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+  ::selection {
+    background: rgba(14, 165, 233, 0.25);
+    color: #0c4a6e;
   }
 
-  .theme-input {
-    background-color: var(--app-input-bg);
-    border-color: var(--app-input-border);
-    color: var(--app-text);
-  }
-
-  .theme-item {
-    background-color: var(--app-item-bg);
-    border-color: var(--app-border);
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    height: auto;
   }
 }
 
-/* ─── Animations (unchanged) ────────────── */
 @layer utilities {
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .safe-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+  }
+
+  .page-with-chatbot {
+    padding-bottom: max(6rem, calc(5rem + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #bae6fd transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #bae6fd;
+    border-radius: 9999px;
+  }
+
   @keyframes brand-float {
-    0%, 100% { transform: translateY(0) rotate(var(--brand-tilt, 0deg)) scale(1); }
-    50% { transform: translateY(-10px) rotate(calc(var(--brand-tilt, 0deg) + 5deg)) scale(1.05); }
+    0%,
+    100% {
+      transform: translateY(0) rotate(var(--brand-tilt, 0deg)) scale(1);
+    }
+    50% {
+      transform: translateY(-10px) rotate(calc(var(--brand-tilt, 0deg) + 5deg)) scale(1.05);
+    }
   }
+
   @keyframes auth-panel-glow {
-    0%, 100% { opacity: 0.45; transform: scale(1) rotate(0deg); }
-    50% { opacity: 0.75; transform: scale(1.08) rotate(8deg); }
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(1.08) rotate(8deg);
+    }
   }
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+  @keyframes sub-drift {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-6px);
+    }
   }
-  @keyframes brand-pop {
-    0% { transform: translateY(0) rotate(var(--brand-tilt, 0deg)) scale(1); }
-    100% { transform: translateY(-14px) rotate(0deg) scale(1.18); }
+
+  .brand-tile-float {
+    animation: brand-float 3.5s ease-in-out infinite;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .brand-tile:hover .brand-tile-float,
+  .brand-tile:focus-visible .brand-tile-float,
+  .brand-tile-float-paused {
+    animation: none;
+    transform: translateY(-14px) rotate(0deg) scale(1.18);
+  }
+
+  .brand-tile:hover .brand-tile-logo img,
+  .brand-tile:focus-visible .brand-tile-logo img {
+    transform: scale(1.12);
+  }
+
+  .brand-tile-logo img {
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .brand-tile-logo {
+    transition:
+      transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.5s ease,
+      ring-color 0.4s ease;
+  }
+
+  .animate-auth-glow {
+    animation: auth-panel-glow 6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-tile-float,
+    .animate-auth-glow {
+      animation: none;
+    }
   }
 }

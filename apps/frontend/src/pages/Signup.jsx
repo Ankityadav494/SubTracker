@@ -88,7 +88,7 @@ const Signup = () => {
   };
 
   return (
-    <Layout className="h-svh max-h-svh">
+    <Layout className="auth-viewport" showChatBot={false}>
       <AuthCard
         title={step === "form" ? "Create account" : "Verify your email"}
         subtitle={
