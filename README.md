@@ -72,21 +72,24 @@ Default API URL: `http://localhost:5000/api`
 
 ### 3. Run
 
-**Option A — both from root:**
+**Recommended (frontend + live Render API — avoids local MongoDB crashes):**
 
 ```bash
 npm run dev
 ```
 
-**Option B — separate terminals:**
+Uses Vite proxy to `https://subtracker-1-tsuh.onrender.com` (see `apps/frontend/.env.development.local`).
+
+**Full local stack** (needs a working `MONGODB_URI` in `apps/backend/.env`):
 
 ```bash
-cd apps/backend && npm run dev
-cd apps/frontend && npm run dev
+npm run dev:full
 ```
 
+If the backend exits with `querySrv ENOTFOUND`, your Atlas connection string is wrong or outdated — copy a new one from [MongoDB Atlas](https://cloud.mongodb.com) → Connect → Drivers.
+
 - Frontend: http://localhost:5173  
-- Backend: http://localhost:5000  
+- Backend (local): http://localhost:5000  
 
 ## Run only one side
 

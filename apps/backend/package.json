@@ -4,7 +4,7 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config server.js",
+    "dev": "nodemon -r dotenv/config --dns-result-order=ipv4first server.js",
     "build": "npm install --omit=dev",
     "start": "npm install --omit=dev && node server.js",
     "diagnose:email": "node -r dotenv/config scripts/diagnose-email.js",
