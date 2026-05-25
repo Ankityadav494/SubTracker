@@ -26,12 +26,21 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS blocked: ${origin}`));
+      console.warn("[cors] Blocked origin:", origin, "allowed:", allowedOrigins);
+      return callback(null, false);
     },
     credentials: true,
   })
 );
 app.use(express.json());
+
+app.use((err, req, res, next) => {
+  if (err?.type === "entity.parse.failed") {
+    console.warn("[api] Invalid JSON body on", req.method, req.path);
+    return res.status(400).json({ message: "Invalid JSON in request body" });
+  }
+  next(err);
+});
 
 const healthPayload = () => ({
   status: "ok",
@@ -55,8 +64,11 @@ app.use("/api/users", usersRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/household", householdRoutes);
 
-app.use((err, _req, res, _next) => {
-  console.error(err);
+app.use((err, req, res, _next) => {
+  if (err.message?.includes("CORS")) {
+    return res.status(403).json({ message: "Not allowed by CORS" });
+  }
+  console.error("[api]", req.method, req.path, err.message);
   res.status(500).json({ message: "Server error" });
 });
 
