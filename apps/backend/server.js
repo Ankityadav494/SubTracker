@@ -22,11 +22,21 @@ const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .map((o) => normalizeOrigin(o))
   .filter(Boolean);
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  const normalized = normalizeOrigin(origin);
+  if (allowedOrigins.includes(normalized)) return true;
+  // Amplify preview/prod branches + local Vite dev
+  if (/^https:\/\/[\w-]+\.amplifyapp\.com$/i.test(normalized)) return true;
+  if (/^http:\/\/localhost(:\d+)?$/i.test(normalized)) return true;
+  if (/^http:\/\/127\.0\.0\.1(:\d+)?$/i.test(normalized)) return true;
+  return false;
+};
+
 app.use(
   cors({
     origin(origin, callback) {
-      const normalized = normalizeOrigin(origin);
-      if (!origin || allowedOrigins.includes(normalized)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
       console.warn("[cors] Blocked origin:", origin, "allowed:", allowedOrigins);

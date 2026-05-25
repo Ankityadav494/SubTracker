@@ -50,11 +50,14 @@ const Signup = () => {
     } catch (err) {
       if (err.code === "ECONNABORTED") {
         setError(
-          "Server is waking up (Render free tier). Wait 1–2 minutes and try again."
+          "Server is waking up (Render free tier). Wait 1–2 minutes, open /api/health in a tab, then try again."
         );
       } else if (err.message === "Network Error") {
+        const isLocal = window.location.hostname === "localhost";
         setError(
-          `Cannot reach the API at ${API_BASE_URL}. In Amplify, set VITE_API_URL=https://subtracker-1-tsuh.onrender.com/api and redeploy the frontend.`
+          isLocal
+            ? "Cannot reach the API. Run npm run dev:remote from the project root (uses Vite proxy), or start the backend with npm run dev:backend."
+            : `Cannot reach the API (${API_BASE_URL}). Redeploy Amplify after the latest push, or wait 1–2 min if Render was asleep.`
         );
       } else {
         setError(err.response?.data?.message || "Could not send verification code");

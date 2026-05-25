@@ -5,6 +5,7 @@
   "scripts": {
     "install:all": "npm install --prefix apps/backend && npm install --prefix apps/frontend",
     "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev --prefix apps/backend\" \"npm run dev --prefix apps/frontend\"",
+    "dev:remote": "npm run dev --prefix apps/frontend",
     "dev:backend": "npm run dev --prefix apps/backend",
     "dev:frontend": "npm run dev --prefix apps/frontend",
     "build": "npm run build --prefix apps/frontend",

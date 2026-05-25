@@ -10,10 +10,17 @@ export const AuthProvider = ({ children }) => {
   // Auto login on refresh
   useEffect(() => {
     const checkUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await API.get("/auth/me");
+        const res = await API.get("/auth/me", { timeout: 10000 });
         setUser(res.data);
-      } catch (err) {
+      } catch {
+        localStorage.removeItem("token");
         setUser(null);
       } finally {
         setLoading(false);

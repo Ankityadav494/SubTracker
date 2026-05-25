@@ -6,6 +6,7 @@ frontend:
         - npm ci
     build:
       commands:
+        - export VITE_API_URL=https://subtracker-1-tsuh.onrender.com/api
         - npm run build
   artifacts:
     baseDirectory: dist
@@ -14,5 +15,3 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-  # Amplify Console → Environment variables (required):
-  # VITE_API_URL = https://subtracker-1-tsuh.onrender.com/api
