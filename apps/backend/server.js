@@ -15,15 +15,18 @@ const { startReminderCron } = require("./jobs/reminderJob");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const normalizeOrigin = (url) => url?.trim().replace(/\/$/, "") || "";
+
 const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .split(",")
-  .map((o) => o.trim())
+  .map((o) => normalizeOrigin(o))
   .filter(Boolean);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      const normalized = normalizeOrigin(origin);
+      if (!origin || allowedOrigins.includes(normalized)) {
         return callback(null, true);
       }
       console.warn("[cors] Blocked origin:", origin, "allowed:", allowedOrigins);

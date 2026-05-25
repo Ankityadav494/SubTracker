@@ -28,6 +28,9 @@ const getTransporter = () => {
     port,
     secure: port === 465,
     requireTLS: port === 587,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
@@ -43,21 +46,30 @@ const sendViaBrevoApi = async ({ to, subject, text, html }) => {
   if (!apiKey) return false;
 
   const sender = parseFrom(getFrom());
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-      "api-key": apiKey,
-      accept: "application/json",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      sender,
-      to: [{ email: to }],
-      subject,
-      textContent: text,
-      htmlContent: html,
-    }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+
+  let res;
+  try {
+    res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender,
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+        htmlContent: html,
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!res.ok) {
     const body = await res.text();
@@ -102,14 +114,8 @@ const sendViaSmtp = async ({ to, subject, text, html }) => {
 
 const sendMail = async ({ to, subject, text, html }) => {
   if (process.env.BREVO_API_KEY) {
-    try {
-      await sendViaBrevoApi({ to, subject, text, html });
-      return { sent: true, via: "api" };
-    } catch (apiErr) {
-      console.error("[email] Brevo API failed:", apiErr.message);
-      if (!getTransporter()) throw apiErr;
-      console.log("[email] Falling back to SMTP...");
-    }
+    await sendViaBrevoApi({ to, subject, text, html });
+    return { sent: true, via: "api" };
   }
 
   await sendViaSmtp({ to, subject, text, html });

@@ -47,7 +47,17 @@ const Signup = () => {
       setOtp("");
       toast.success("Verification code sent to your email");
     } catch (err) {
-      setError(err.response?.data?.message || "Could not send verification code");
+      if (err.code === "ECONNABORTED") {
+        setError(
+          "Server is waking up (Render free tier). Wait 1–2 minutes and try again."
+        );
+      } else if (err.message === "Network Error") {
+        setError(
+          "Cannot reach the API. Check VITE_API_URL and that the backend is live."
+        );
+      } else {
+        setError(err.response?.data?.message || "Could not send verification code");
+      }
     } finally {
       setLoading(false);
     }
@@ -151,7 +161,7 @@ const Signup = () => {
             </div>
 
             <button type="submit" disabled={loading} className={btnPrimaryClass}>
-              {loading ? "Sending code..." : "Send verification code"}
+              {loading ? "Sending code… (first try may take up to 2 min)" : "Send verification code"}
             </button>
           </form>
         ) : (
