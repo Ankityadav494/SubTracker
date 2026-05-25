@@ -1,6 +1,12 @@
 const nodemailer = require("nodemailer");
 
-let transporter = null;
+let transporter587 = null;
+
+const isCloudHost = Boolean(
+  process.env.RENDER_SERVICE_ID || process.env.RENDER_EXTERNAL_URL
+);
+
+const trimEnv = (key) => process.env[key]?.trim() || "";
 
 const parseFrom = (fromStr) => {
   const raw = fromStr || "SubTracker";
@@ -11,38 +17,47 @@ const parseFrom = (fromStr) => {
   return { name: "SubTracker", email: raw.trim() };
 };
 
-const getFrom = () => process.env.EMAIL_FROM || process.env.EMAIL_USER;
+const getFrom = () => trimEnv("EMAIL_FROM") || trimEnv("EMAIL_USER");
 
-const getTransporter = () => {
-  if (transporter) return transporter;
-
-  const { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } = process.env;
-
-  if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
-    return null;
+const getBrevoApiKey = () => {
+  const key = trimEnv("BREVO_API_KEY");
+  if (!key) return "";
+  if (key.startsWith("xsmtpsib-")) {
+    console.error(
+      "[email] BREVO_API_KEY is your SMTP key — create an API key at https://app.brevo.com/settings/keys/api"
+    );
+    return "";
   }
+  return key;
+};
 
-  const port = Number(EMAIL_PORT) || 587;
-  transporter = nodemailer.createTransport({
+const createSmtpTransport = (port) => {
+  const EMAIL_HOST = trimEnv("EMAIL_HOST") || "smtp-relay.brevo.com";
+  const EMAIL_USER = trimEnv("EMAIL_USER");
+  const EMAIL_PASS = trimEnv("EMAIL_PASS");
+
+  if (!EMAIL_USER || !EMAIL_PASS) return null;
+
+  return nodemailer.createTransport({
     host: EMAIL_HOST,
     port,
     secure: port === 465,
     requireTLS: port === 587,
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 20000,
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS,
-    },
+    connectionTimeout: isCloudHost ? 8000 : 15000,
+    greetingTimeout: isCloudHost ? 8000 : 15000,
+    socketTimeout: isCloudHost ? 10000 : 20000,
+    auth: { user: EMAIL_USER, pass: EMAIL_PASS },
   });
-
-  return transporter;
 };
 
-/** Brevo HTTP API — works better on cloud hosts (Render) when SMTP IP is blocked */
+const getTransporter587 = () => {
+  if (transporter587) return transporter587;
+  transporter587 = createSmtpTransport(Number(trimEnv("EMAIL_PORT")) || 587);
+  return transporter587;
+};
+
 const sendViaBrevoApi = async ({ to, subject, text, html }) => {
-  const apiKey = process.env.BREVO_API_KEY;
+  const apiKey = getBrevoApiKey();
   if (!apiKey) return false;
 
   const sender = parseFrom(getFrom());
@@ -74,7 +89,11 @@ const sendViaBrevoApi = async ({ to, subject, text, html }) => {
   if (!res.ok) {
     const body = await res.text();
     const err = new Error(`Brevo API ${res.status}: ${body}`);
-    if (/unauthorized|ip address|401/i.test(body)) {
+    if (/unauthorized|invalid api|key not found|401/i.test(body)) {
+      err.code = "BREVO_API_KEY_INVALID";
+    } else if (/sender|not verified|invalid from/i.test(body)) {
+      err.code = "BREVO_SENDER_INVALID";
+    } else if (/ip address|525/i.test(body)) {
       err.code = "BREVO_IP_BLOCKED";
     }
     throw err;
@@ -83,43 +102,123 @@ const sendViaBrevoApi = async ({ to, subject, text, html }) => {
   return true;
 };
 
-const sendViaSmtp = async ({ to, subject, text, html }) => {
-  const transport = getTransporter();
+const sendViaResend = async ({ to, subject, text, html }) => {
+  const apiKey = trimEnv("RESEND_API_KEY");
+  if (!apiKey) return false;
+
+  const from = trimEnv("RESEND_FROM") || getFrom() || "SubTracker <onboarding@resend.dev>";
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from, to: [to], subject, html, text }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    const err = new Error(`Resend ${res.status}: ${body}`);
+    err.code = "RESEND_FAILED";
+    throw err;
+  }
+
+  return true;
+};
+
+const sendViaGmailWebhook = async ({ to, subject, text, html }) => {
+  const url = trimEnv("EMAIL_WEBHOOK_URL");
+  if (!url) return false;
+
+  const headers = { "Content-Type": "application/json" };
+  const secret = trimEnv("EMAIL_WEBHOOK_SECRET");
+  if (secret) headers["X-Webhook-Secret"] = secret;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ to, subject, text, html }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Gmail webhook ${res.status}: ${body}`);
+  }
+
+  return true;
+};
+
+const sendViaSmtpPort = async (port, { to, subject, text, html }) => {
+  const transport = port === 587 ? getTransporter587() : createSmtpTransport(port);
   if (!transport) {
-    const err = new Error(
-      "Email not configured — set EMAIL_* or BREVO_API_KEY on Render"
-    );
+    const err = new Error("EMAIL_USER and EMAIL_PASS required for SMTP");
     err.code = "EMAIL_NOT_CONFIGURED";
     throw err;
   }
 
-  try {
-    await transport.sendMail({
-      from: getFrom(),
-      to,
-      subject,
-      text,
-      html,
-    });
-  } catch (err) {
-    console.error("[email] SMTP send failed:", err.message);
-    if (/unauthorized ip|525/i.test(err.message)) {
-      err.code = "BREVO_IP_BLOCKED";
-    }
-    throw err;
-  }
-
+  await transport.sendMail({ from: getFrom(), to, subject, text, html });
   return true;
 };
 
 const sendMail = async ({ to, subject, text, html }) => {
-  if (process.env.BREVO_API_KEY) {
-    await sendViaBrevoApi({ to, subject, text, html });
-    return { sent: true, via: "api" };
+  const attempts = [];
+
+  if (getBrevoApiKey()) {
+    attempts.push(async () => {
+      await sendViaBrevoApi({ to, subject, text, html });
+      return "brevo-api";
+    });
   }
 
-  await sendViaSmtp({ to, subject, text, html });
-  return { sent: true, via: "smtp" };
+  if (trimEnv("RESEND_API_KEY")) {
+    attempts.push(async () => {
+      await sendViaResend({ to, subject, text, html });
+      return "resend";
+    });
+  }
+
+  if (trimEnv("EMAIL_WEBHOOK_URL")) {
+    attempts.push(async () => {
+      await sendViaGmailWebhook({ to, subject, text, html });
+      return "gmail-webhook";
+    });
+  }
+
+  if (!isCloudHost) {
+    attempts.push(async () => {
+      await sendViaSmtpPort(587, { to, subject, text, html });
+      return "smtp-587";
+    });
+  } else {
+    // Render free tier blocks 587/465/25; try 2525 before failing
+    attempts.push(async () => {
+      await sendViaSmtpPort(2525, { to, subject, text, html });
+      return "smtp-2525";
+    });
+  }
+
+  const errors = [];
+  for (const attempt of attempts) {
+    try {
+      const via = await attempt();
+      return { sent: true, via };
+    } catch (err) {
+      console.error("[email] attempt failed:", err.message);
+      errors.push(err);
+    }
+  }
+
+  if (isCloudHost && !getBrevoApiKey() && !trimEnv("RESEND_API_KEY") && !trimEnv("EMAIL_WEBHOOK_URL")) {
+    const err = new Error(
+      "On Render, set BREVO_API_KEY (https://app.brevo.com/settings/keys/api) — SMTP ports 587/465 are blocked."
+    );
+    err.code = "BREVO_API_KEY_REQUIRED";
+    throw err;
+  }
+
+  const last = errors[errors.length - 1];
+  if (last?.code) throw last;
+  throw last || new Error("All email methods failed");
 };
 
 const sendSignupOtp = async ({ to, name, otp }) => {
@@ -210,20 +309,76 @@ const sendRenewalReminder = async ({ to, userName, subscriptions, daysBefore }) 
   return result.sent;
 };
 
+const getEmailStatus = () => {
+  const apiKey = getBrevoApiKey();
+  const smtpReady = Boolean(trimEnv("EMAIL_USER") && trimEnv("EMAIL_PASS"));
+  const resend = Boolean(trimEnv("RESEND_API_KEY"));
+  const webhook = Boolean(trimEnv("EMAIL_WEBHOOK_URL"));
+
+  if (apiKey) {
+    return { ok: true, mode: "brevo-api", cloudHost: isCloudHost };
+  }
+  if (resend) return { ok: true, mode: "resend", cloudHost: isCloudHost };
+  if (webhook) return { ok: true, mode: "gmail-webhook", cloudHost: isCloudHost };
+
+  if (isCloudHost) {
+    return {
+      ok: false,
+      mode: "none",
+      cloudHost: true,
+      smtpConfigured: smtpReady,
+      hint:
+        "Add BREVO_API_KEY on Render (https://app.brevo.com/settings/keys/api). SMTP 587 is blocked on free tier.",
+    };
+  }
+
+  if (!smtpReady) {
+    return { ok: false, mode: "none", hint: "Set EMAIL_* or BREVO_API_KEY in .env" };
+  }
+
+  return { ok: true, mode: "smtp-local", cloudHost: false };
+};
+
 const verifyEmailConfig = async () => {
-  if (process.env.BREVO_API_KEY) {
+  const apiKey = getBrevoApiKey();
+  if (apiKey) {
     try {
       const res = await fetch("https://api.brevo.com/v3/account", {
-        headers: { "api-key": process.env.BREVO_API_KEY, accept: "application/json" },
+        headers: { "api-key": apiKey, accept: "application/json" },
       });
       if (res.ok) return { ok: true, via: "brevo-api" };
-      return { ok: false, via: "brevo-api", error: await res.text() };
+      const text = await res.text();
+      return {
+        ok: false,
+        via: "brevo-api",
+        error: text,
+        code: /key not found|unauthorized/i.test(text)
+          ? "BREVO_API_KEY_INVALID"
+          : undefined,
+      };
     } catch (e) {
       return { ok: false, via: "brevo-api", error: e.message };
     }
   }
 
-  const transport = getTransporter();
+  if (trimEnv("RESEND_API_KEY")) {
+    return { ok: true, via: "resend" };
+  }
+
+  if (trimEnv("EMAIL_WEBHOOK_URL")) {
+    return { ok: true, via: "gmail-webhook" };
+  }
+
+  if (isCloudHost) {
+    return {
+      ok: false,
+      via: "none",
+      error: "BREVO_API_KEY required on Render",
+      code: "BREVO_API_KEY_REQUIRED",
+    };
+  }
+
+  const transport = getTransporter587();
   if (!transport) return { ok: false, error: "EMAIL_* not set" };
 
   try {
@@ -235,9 +390,10 @@ const verifyEmailConfig = async () => {
 };
 
 module.exports = {
-  getTransporter,
+  getTransporter: getTransporter587,
   sendMail,
   sendSignupOtp,
   sendRenewalReminder,
   verifyEmailConfig,
+  getEmailStatus,
 };

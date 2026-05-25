@@ -50,6 +50,19 @@ const healthPayload = () => ({
   service: "subtracker-api",
 });
 
+app.get("/api/health/email", async (_req, res) => {
+  const { getEmailStatus, verifyEmailConfig } = require("./services/emailService");
+  const status = getEmailStatus();
+  const verified = await verifyEmailConfig();
+  res.json({
+    ...status,
+    ok: status.ok && verified.ok,
+    verified: verified.ok,
+    via: verified.via,
+    error: verified.ok ? undefined : verified.error,
+  });
+});
+
 app.get("/api/health", (_req, res) => res.json(healthPayload()));
 app.get("/health", (_req, res) => res.json(healthPayload()));
 app.get("/", (_req, res) =>
@@ -86,10 +99,19 @@ const start = async () => {
   await connectDB();
   startReminderCron();
 
-  const { verifyEmailConfig } = require("./services/emailService");
+  const { getEmailStatus, verifyEmailConfig } = require("./services/emailService");
+  const emailStatus = getEmailStatus();
   verifyEmailConfig().then((r) => {
-    if (r.ok) console.log(`Email ready (${r.via})`);
-    else console.error("[email] Not ready:", r.error || "not configured");
+    if (r.ok) {
+      console.log(`Email ready (${r.via})`);
+      return;
+    }
+    console.error("[email] Not ready:", r.error || emailStatus.hint || "not configured");
+    if (emailStatus.cloudHost && emailStatus.mode === "none") {
+      console.error(
+        "[email] OTP signup will FAIL until BREVO_API_KEY is set on Render → https://app.brevo.com/settings/keys/api"
+      );
+    }
   });
 
   app.listen(PORT, () => {

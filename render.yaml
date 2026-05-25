@@ -9,3 +9,12 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
+      # Required for OTP on Render free tier (SMTP ports blocked — use Brevo HTTP API)
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: "SubTracker <ankityadavbkpur@gmail.com>"
+      - key: EMAIL_HOST
+        value: smtp-relay.brevo.com
+      - key: EMAIL_PORT
+        value: "587"

@@ -82,10 +82,28 @@ router.post("/signup/send-otp", async (req, res) => {
         message: "Email is not configured on the server. Add EMAIL_* or BREVO_API_KEY on Render.",
       });
     }
+    if (err.code === "BREVO_API_KEY_REQUIRED") {
+      return res.status(503).json({
+        message:
+          "Render blocks SMTP on free tier. In Render → Environment, add BREVO_API_KEY (from Brevo → SMTP & API → API Keys), then redeploy.",
+      });
+    }
+    if (err.code === "BREVO_API_KEY_INVALID") {
+      return res.status(503).json({
+        message:
+          "Invalid BREVO_API_KEY. Use an API key (starts with xkeysib-), not the SMTP key (xsmtpsib-).",
+      });
+    }
+    if (err.code === "BREVO_SENDER_INVALID") {
+      return res.status(503).json({
+        message:
+          "Sender not verified in Brevo. Verify ankityadavbkpur@gmail.com under Senders & IP, and set EMAIL_FROM to match.",
+      });
+    }
     if (err.code === "BREVO_IP_BLOCKED") {
       return res.status(503).json({
         message:
-          "Brevo blocked this server's IP. In Brevo → Security → Authorized IPs, turn off SMTP/API IP blocking, or add BREVO_API_KEY on Render.",
+          "Brevo blocked this server's IP. Add BREVO_API_KEY on Render (HTTP API, not SMTP).",
       });
     }
     res.status(500).json({ message: "Could not send verification code" });
@@ -120,7 +138,13 @@ router.post("/signup/resend-otp", async (req, res) => {
 
     res.json({ message: "New verification code sent" });
   } catch (err) {
-    console.error(err);
+    console.error("[signup/resend-otp]", err.message);
+    if (err.code === "BREVO_API_KEY_REQUIRED") {
+      return res.status(503).json({
+        message:
+          "Render blocks SMTP. Add BREVO_API_KEY on Render (Brevo → API Keys), then redeploy.",
+      });
+    }
     res.status(500).json({ message: "Could not resend code" });
   }
 });

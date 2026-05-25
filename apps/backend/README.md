@@ -36,6 +36,13 @@ Set `CLIENT_URL` to your frontend URL (no trailing slash). Comma-separate for mu
 
 Health check: `https://YOUR-SERVICE.onrender.com/api/health`
 
+**OTP on Render free tier:** SMTP is blocked. You must set `BREVO_API_KEY` (not the SMTP key):
+
+1. [Brevo → API Keys](https://app.brevo.com/settings/keys/api) → Generate (Transactional)
+2. Locally: `npm run setup:brevo -- YOUR_API_KEY`
+3. Render → Environment → add `BREVO_API_KEY` → Manual Deploy
+4. Check: `GET /api/health/email` should show `"mode":"brevo-api"`
+
 ## Scripts
 
 | Command | Description |

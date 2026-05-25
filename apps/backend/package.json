@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon -r dotenv/config server.js",
     "build": "npm install --omit=dev",
-    "start": "npm install --omit=dev && node server.js"
+    "start": "npm install --omit=dev && node server.js",
+    "diagnose:email": "node -r dotenv/config scripts/diagnose-email.js",
+    "setup:brevo": "node scripts/setup-brevo-api-key.js"
   },
   "engines": {
     "node": ">=20 <25"
