@@ -76,7 +76,12 @@ router.post("/signup/send-otp", async (req, res) => {
       expiresInMinutes: 10,
     });
   } catch (err) {
-    console.error(err);
+    console.error("[signup/send-otp]", err.message);
+    if (err.code === "EMAIL_NOT_CONFIGURED") {
+      return res.status(503).json({
+        message: "Email is not configured on the server. Add EMAIL_* variables on Render.",
+      });
+    }
     res.status(500).json({ message: "Could not send verification code" });
   }
 });

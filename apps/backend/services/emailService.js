@@ -31,15 +31,26 @@ const getFrom = () => process.env.EMAIL_FROM || process.env.EMAIL_USER;
 
 const sendMail = async ({ to, subject, text, html }) => {
   const transport = getTransporter();
-  if (!transport) return { sent: false, logged: true };
+  if (!transport) {
+    const err = new Error(
+      "Email not configured — set EMAIL_HOST, EMAIL_USER, EMAIL_PASS on Render"
+    );
+    err.code = "EMAIL_NOT_CONFIGURED";
+    throw err;
+  }
 
-  await transport.sendMail({
-    from: getFrom(),
-    to,
-    subject,
-    text,
-    html,
-  });
+  try {
+    await transport.sendMail({
+      from: getFrom(),
+      to,
+      subject,
+      text,
+      html,
+    });
+  } catch (err) {
+    console.error("[email] SMTP send failed:", err.message);
+    throw err;
+  }
 
   return { sent: true, logged: false };
 };
@@ -58,13 +69,8 @@ const sendSignupOtp = async ({ to, name, otp }) => {
     </div>
   `;
 
-  const result = await sendMail({ to, subject, text, html });
-
-  if (!result.sent) {
-    console.log(`[DEV] Signup OTP for ${to}: ${otp}`);
-  }
-
-  return result.sent;
+  await sendMail({ to, subject, text, html });
+  return true;
 };
 
 const daysUntil = (date) => {

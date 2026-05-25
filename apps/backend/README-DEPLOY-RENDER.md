@@ -13,6 +13,18 @@
 
 `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRE`, `CLIENT_URL`, `EMAIL_*`, `GEMINI_*`, `REMINDER_*`
 
+### Email (Brevo) — required for signup OTP
+
+| Variable | Example |
+|----------|---------|
+| `EMAIL_HOST` | `smtp-relay.brevo.com` |
+| `EMAIL_PORT` | `587` |
+| `EMAIL_USER` | Your Brevo login email (SMTP account) |
+| `EMAIL_PASS` | Brevo **SMTP key** (not your Brevo password) |
+| `EMAIL_FROM` | `SubTracker <verified-sender@yourdomain.com>` — must be a **verified sender** in Brevo |
+
+If signup shows "Could not send verification code", open **Logs** and search for `[email] SMTP send failed`.
+
 Do **not** set `PORT` (Render sets it).
 
 ## Verify
