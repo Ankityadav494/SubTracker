@@ -321,14 +321,22 @@ const getEmailStatus = () => {
   if (resend) return { ok: true, mode: "resend", cloudHost: isCloudHost };
   if (webhook) return { ok: true, mode: "gmail-webhook", cloudHost: isCloudHost };
 
+  if (isCloudHost && smtpReady) {
+    return {
+      ok: true,
+      mode: "smtp-2525",
+      cloudHost: true,
+      hint: "Using Brevo SMTP port 2525. For reliability, add BREVO_API_KEY.",
+    };
+  }
+
   if (isCloudHost) {
     return {
       ok: false,
       mode: "none",
       cloudHost: true,
-      smtpConfigured: smtpReady,
       hint:
-        "Add BREVO_API_KEY on Render (https://app.brevo.com/settings/keys/api). SMTP 587 is blocked on free tier.",
+        "Add BREVO_API_KEY on Render (https://app.brevo.com/settings/keys/api).",
     };
   }
 
@@ -367,6 +375,23 @@ const verifyEmailConfig = async () => {
 
   if (trimEnv("EMAIL_WEBHOOK_URL")) {
     return { ok: true, via: "gmail-webhook" };
+  }
+
+  if (isCloudHost && trimEnv("EMAIL_USER") && trimEnv("EMAIL_PASS")) {
+    try {
+      const transport = createSmtpTransport(2525);
+      if (transport) {
+        await transport.verify();
+        return { ok: true, via: "smtp-2525" };
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        via: "smtp-2525",
+        error: e.message,
+        code: "BREVO_API_KEY_REQUIRED",
+      };
+    }
   }
 
   if (isCloudHost) {

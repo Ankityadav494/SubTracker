@@ -6,6 +6,7 @@ import {
   resendSignupOtp,
   verifySignupOtp,
 } from "../services/authService";
+import { API_BASE_URL } from "../services/api";
 import { useAuth } from "../hooks/useAuth";
 import AuthCard from "../components/AuthCard";
 import Layout from "../components/Layout";
@@ -53,7 +54,7 @@ const Signup = () => {
         );
       } else if (err.message === "Network Error") {
         setError(
-          "Cannot reach the API. Check VITE_API_URL and that the backend is live."
+          `Cannot reach the API at ${API_BASE_URL}. In Amplify, set VITE_API_URL=https://subtracker-1-tsuh.onrender.com/api and redeploy the frontend.`
         );
       } else {
         setError(err.response?.data?.message || "Could not send verification code");
