@@ -1,5 +1,4 @@
-require("dotenv").config();
-
+// Env vars: Render dashboard in production; .env locally via `npm run dev`
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
