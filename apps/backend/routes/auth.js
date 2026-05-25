@@ -79,7 +79,13 @@ router.post("/signup/send-otp", async (req, res) => {
     console.error("[signup/send-otp]", err.message);
     if (err.code === "EMAIL_NOT_CONFIGURED") {
       return res.status(503).json({
-        message: "Email is not configured on the server. Add EMAIL_* variables on Render.",
+        message: "Email is not configured on the server. Add EMAIL_* or BREVO_API_KEY on Render.",
+      });
+    }
+    if (err.code === "BREVO_IP_BLOCKED") {
+      return res.status(503).json({
+        message:
+          "Brevo blocked this server's IP. In Brevo → Security → Authorized IPs, turn off SMTP/API IP blocking, or add BREVO_API_KEY on Render.",
       });
     }
     res.status(500).json({ message: "Could not send verification code" });
