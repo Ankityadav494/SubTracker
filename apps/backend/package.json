@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "prestart": "npm install --omit=dev",
+    "build": "npm install --omit=dev",
     "start": "node server.js"
   },
   "engines": {

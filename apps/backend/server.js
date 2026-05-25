@@ -24,9 +24,19 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
+const healthPayload = () => ({
+  status: "ok",
+  service: "subtracker-api",
 });
+
+app.get("/api/health", (_req, res) => res.json(healthPayload()));
+app.get("/health", (_req, res) => res.json(healthPayload()));
+app.get("/", (_req, res) =>
+  res.json({
+    ...healthPayload(),
+    message: "SubTracker API — use /api/* routes",
+  })
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
