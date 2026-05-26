@@ -1,3 +1,4 @@
+# Use root amplify.yml for Amplify monorepo builds (see /amplify.yml at repo root).
 version: 1
 frontend:
   phases:

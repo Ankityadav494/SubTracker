@@ -59,8 +59,9 @@ If `mongodb+srv://` still fails on your network, use Atlas **“Standard connect
 
 | Setting | Value |
 |---------|--------|
-| **Repository root / app root** | `apps/frontend` |
-| **Build spec** | Use `apps/frontend/amplify.yml` (in repo) |
+| **Monorepo app root** | `apps/frontend` |
+| **AMPLIFY_MONOREPO_APP_ROOT** | `apps/frontend` (Environment variables) |
+| **Build spec** | Root `amplify.yml` (monorepo `applications` format) |
 | **Branch** | `main` |
 
 ### Environment variable (build time)

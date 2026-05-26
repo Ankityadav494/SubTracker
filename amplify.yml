@@ -1,0 +1,21 @@
+# Monorepo build spec (required at repo root when Amplify monorepo mode is enabled)
+# Console: AMPLIFY_MONOREPO_APP_ROOT must be apps/frontend
+version: 1
+applications:
+  - appRoot: apps/frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - export VITE_API_URL=https://subtracker-1-tsuh.onrender.com/api
+            - npm run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - node_modules/**/*
