@@ -22,6 +22,14 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
+  const afterLoginPath = () => {
+    const redirect = params.get("redirect");
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+      return redirect;
+    }
+    return "/dashboard";
+  };
+
   useEffect(() => {
     const code = params.get("code");
     if (!code) return;
@@ -29,8 +37,9 @@ const Login = () => {
       .then((res) => {
         setUser(res.user);
         toast.success("Signed in with GitHub");
+        const next = afterLoginPath();
         setParams({});
-        navigate("/");
+        navigate(next);
       })
       .catch(() => {
         toast.error("GitHub sign-in failed");
@@ -47,7 +56,7 @@ const Login = () => {
       const res = await login(form);
       setUser(res.user);
       toast.success("Welcome back!");
-      navigate("/");
+      navigate(afterLoginPath());
     } catch {
       setError("Invalid credentials");
     } finally {

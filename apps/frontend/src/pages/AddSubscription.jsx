@@ -51,7 +51,7 @@ const AddSubscription = () => {
       setError("");
       await addSubscription(form);
       toast.success("Subscription added");
-      navigate("/");
+      navigate("/dashboard");
     } catch {
       setError("Failed to add subscription");
     } finally {

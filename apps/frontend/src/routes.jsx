@@ -10,20 +10,44 @@ import ResetPassword from "./pages/ResetPassword";
 import Household from "./pages/Household";
 import AcceptHousehold from "./pages/AcceptHousehold";
 import ProtectedRoute from "./components/ProtectedRoute";
+import GuestRoute from "./components/GuestRoute";
+import HomeRedirect from "./components/HomeRedirect";
 
 const router = createBrowserRouter([
+  { path: "/", element: <HomeRedirect /> },
   {
-    path: "/",
+    path: "/login",
+    element: (
+      <GuestRoute>
+        <Login />
+      </GuestRoute>
+    ),
+  },
+  {
+    path: "/signup",
+    element: (
+      <GuestRoute>
+        <Signup />
+      </GuestRoute>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <GuestRoute>
+        <ForgotPassword />
+      </GuestRoute>
+    ),
+  },
+  { path: "/reset-password/:token", element: <ResetPassword /> },
+  {
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <Dashboard />
       </ProtectedRoute>
     ),
   },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <Signup /> },
-  { path: "/forgot-password", element: <ForgotPassword /> },
-  { path: "/reset-password/:token", element: <ResetPassword /> },
   {
     path: "/add",
     element: (
@@ -64,6 +88,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  { path: "*", element: <HomeRedirect /> },
 ]);
 
 export default router;

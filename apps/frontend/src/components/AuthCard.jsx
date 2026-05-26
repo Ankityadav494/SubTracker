@@ -36,7 +36,7 @@ const AuthCard = ({ title, subtitle, children, footer, showBrands = true }) => (
 
         <header className="relative mb-4 shrink-0 text-center sm:mb-5">
           <AppLogo
-            to="/"
+            to="/login"
             className="inline-flex justify-center"
             textClassName="text-lg font-bold sm:text-2xl"
             size="md"

@@ -80,7 +80,7 @@ const Signup = () => {
       const res = await verifySignupOtp({ email: form.email, otp: otp.trim() });
       setUser(res.user);
       toast.success("Email verified — welcome to SubTracker!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid or expired code");
     } finally {

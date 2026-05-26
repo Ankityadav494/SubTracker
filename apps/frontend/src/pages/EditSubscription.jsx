@@ -29,7 +29,7 @@ const EditSubscription = () => {
           priceHistory: sub.priceHistory,
         });
       })
-      .catch(() => navigate("/"));
+      .catch(() => navigate("/dashboard"));
   }, [id, navigate]);
 
   const handleSubmit = async (e) => {
@@ -38,7 +38,7 @@ const EditSubscription = () => {
       setLoading(true);
       await updateSubscription(id, form);
       toast.success("Subscription updated");
-      navigate("/");
+      navigate("/dashboard");
     } catch {
       setError("Update failed");
     } finally {

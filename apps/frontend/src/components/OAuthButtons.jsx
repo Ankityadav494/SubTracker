@@ -21,7 +21,7 @@ const OAuthButtons = () => {
           const res = await loginWithGoogle(response.credential);
           setUser(res.user);
           toast.success("Signed in with Google");
-          navigate("/");
+          navigate("/dashboard");
         } catch {
           toast.error("Google sign-in failed");
         }

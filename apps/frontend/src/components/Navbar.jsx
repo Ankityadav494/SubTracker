@@ -43,12 +43,12 @@ const Navbar = () => {
     <>
       <nav className="sticky top-0 z-50 border-b border-sky-100 bg-white/90 backdrop-blur-xl shadow-sm shadow-sky-900/5">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
-          <AppLogo to="/" onClick={closeMenu} />
+          <AppLogo to={user ? "/dashboard" : "/login"} onClick={closeMenu} />
 
           <div className="hidden items-center gap-1 sm:flex sm:gap-2">
             {user && (
               <>
-                <NavLink to="/" end className={navLinkClass}>Dashboard</NavLink>
+                <NavLink to="/dashboard" end className={navLinkClass}>Dashboard</NavLink>
                 <NavLink to="/add" className={navLinkClass}>Add</NavLink>
                 <NavLink to="/household" className={navLinkClass}>Household</NavLink>
                 <NavLink to="/settings" className={navLinkClass}>Settings</NavLink>
@@ -108,7 +108,7 @@ const Navbar = () => {
                   <p className="mt-0.5 text-sm font-semibold text-slate-800">{user.name}</p>
                 </div>
                 <nav className="flex flex-col gap-1">
-                  <NavLink to="/" end className={mobileNavLinkClass} onClick={closeMenu}>Dashboard</NavLink>
+                  <NavLink to="/dashboard" end className={mobileNavLinkClass} onClick={closeMenu}>Dashboard</NavLink>
                   <NavLink to="/add" className={mobileNavLinkClass} onClick={closeMenu}>Add Subscription</NavLink>
                   <NavLink to="/household" className={mobileNavLinkClass} onClick={closeMenu}>Household</NavLink>
                   <NavLink to="/settings" className={mobileNavLinkClass} onClick={closeMenu}>Settings</NavLink>
