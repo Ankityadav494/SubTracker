@@ -108,15 +108,3 @@ See folder-specific READMEs:
 | GET | `/api/auth/me` | Yes |
 | GET/POST/PUT/DELETE | `/api/subscriptions` | Yes |
 
-## Deploy frontend to AWS S3
-
-```powershell
-$env:S3_BUCKET = "your-bucket-name"
-npm run deploy:s3
-```
-
-Set `VITE_API_URL` in `apps/frontend/.env` to your production API before building.
-
-## License
-
-MIT
